@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/canadaimmigrationbackend/">
+    <Project Path="canadaimmigrationbackend/CanadaImmigration.Api.Tests/CanadaImmigration.Api.Tests.csproj" />
+    <Project Path="canadaimmigrationbackend/CanadaImmigration.Api/CanadaImmigration.Api.csproj" />
+  </Folder>
+</Solution>
