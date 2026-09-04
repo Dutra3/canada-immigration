@@ -220,3 +220,4 @@
 /Users/gabrieldutra/Documents/projects/canadaimmigrationtracker/canadaimmigrationbackend/CanadaImmigration.Api.Tests/obj/Debug/net8.0/CanadaImmigration.Api.Tests.pdb
 /Users/gabrieldutra/Documents/projects/canadaimmigrationtracker/canadaimmigrationbackend/CanadaImmigration.Api.Tests/obj/Debug/net8.0/CanadaImmigration.Api.Tests.genruntimeconfig.cache
 /Users/gabrieldutra/Documents/projects/canadaimmigrationtracker/canadaimmigrationbackend/CanadaImmigration.Api.Tests/obj/Debug/net8.0/ref/CanadaImmigration.Api.Tests.dll
+/Users/gabrieldutra/Documents/projects/canadaimmigrationtracker/canadaimmigrationbackend/CanadaImmigration.Api.Tests/obj/Debug/net8.0/CanadaImmigration.Api.Tests.sourcelink.json

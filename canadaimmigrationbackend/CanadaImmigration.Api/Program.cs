@@ -15,6 +15,8 @@ builder.Services.AddHttpClient<IExpressEntryDrawService, ExpressEntryDrawService
     client.Timeout = TimeSpan.FromSeconds(10);
 });
 
+builder.Services.AddScoped<IProofOfFundsService, ProofOfFundsService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
