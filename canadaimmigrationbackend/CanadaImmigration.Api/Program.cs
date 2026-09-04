@@ -2,6 +2,8 @@ using CanadaImmigration.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+const string AngularDevCorsPolicy = "AngularDevCorsPolicy";
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -17,6 +19,16 @@ builder.Services.AddHttpClient<IExpressEntryDrawService, ExpressEntryDrawService
 
 builder.Services.AddScoped<IProofOfFundsService, ProofOfFundsService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(AngularDevCorsPolicy, policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,6 +39,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(AngularDevCorsPolicy);
 
 app.UseAuthorization();
 

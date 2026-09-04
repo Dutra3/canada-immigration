@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CanadaImmigration.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b702c46e96d6354a3fdd9aee9f389b6f684ca383")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f2271cd708a2d0d9110246a0bee8a88613f56228")]
 [assembly: System.Reflection.AssemblyProductAttribute("CanadaImmigration.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CanadaImmigration.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
