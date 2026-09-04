@@ -1,0 +1,42 @@
+<div class="draws-container">
+  <h1>Express Entry — Últimas Chamadas (Draws)</h1>
+
+  @if (isLoading()) {
+    <p>Carregando...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (!isLoading() && !errorMessage()) {
+    <table>
+      <thead>
+        <tr>
+          <th>Nº do Draw</th>
+          <th>Data</th>
+          <th>Programa</th>
+          <th>Pessoas Chamadas</th>
+          <th>Pontuação Mínima (CRS)</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (draw of draws(); track draw.drawNumber) {
+          <tr>
+            <td>{{ draw.drawNumber }}</td>
+            <td>{{ draw.date | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ draw.category || 'Geral' }}</td>
+            <td>{{ draw.invitationsIssued }}</td>
+            <td>{{ draw.minimumCRS }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button (click)="goToPreviousPage()" [disabled]="currentPage() === 1">Anterior</button>
+      <span>Página {{ currentPage() }} de {{ totalPages() }}</span>
+      <button (click)="goToNextPage()" [disabled]="currentPage() === totalPages()">Próxima</button>
+    </div>
+  }
+</div>

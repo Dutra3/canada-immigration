@@ -1,0 +1,37 @@
+.proof-of-funds-container {
+  padding: 2rem;
+}
+
+.form-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 1rem 0;
+
+  input {
+    padding: 0.5rem;
+    width: 100px;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+}
+
+.result {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f0f8f0;
+  border-radius: 4px;
+}
+
+.amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c7a2c;
+}
+
+.error {
+  color: #c0392b;
+}

@@ -1,0 +1,31 @@
+<div class="proof-of-funds-container">
+  <h1>Proof of Funds — Imigração Canadense</h1>
+  <p>Informe o número de familiares para descobrir o valor mínimo exigido em fundos comprováveis.</p>
+
+  <div class="form-group">
+    <label for="familySize">Número de familiares</label>
+    <input
+      id="familySize"
+      type="number"
+      min="1"
+      [ngModel]="familySize()"
+      (ngModelChange)="familySize.set($event)"
+    />
+    <button (click)="calculate()" [disabled]="isLoading()">Calcular</button>
+  </div>
+
+  @if (isLoading()) {
+    <p>Calculando...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (result()) {
+    <div class="result">
+      <p>Para <strong>{{ result()!.familySize }}</strong> familiar(es), o valor mínimo exigido é:</p>
+      <p class="amount">{{ result()!.requiredFundsCad | currency: 'CAD' }}</p>
+    </div>
+  }
+</div>
