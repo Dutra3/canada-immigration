@@ -9,29 +9,46 @@
     <p class="error">{{ errorMessage() }}</p>
   }
 
-  @if (!isLoading() && !errorMessage()) {
-    <table>
-      <thead>
-        <tr>
-          <th>Nº do Draw</th>
-          <th>Data</th>
-          <th>Programa</th>
-          <th>Pessoas Chamadas</th>
-          <th>Pontuação Mínima (CRS)</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (draw of draws(); track draw.drawNumber) {
+  @if (!isLoading() && !errorMessage() && draws().length > 0) {
+    <div class="metrics">
+      <div class="metric-card">
+        <p class="label">Último draw</p>
+        <p class="value">#{{ draws()[0].drawNumber }}</p>
+      </div>
+      <div class="metric-card">
+        <p class="label">CRS mínimo</p>
+        <p class="value">{{ draws()[0].minimumCRS }}</p>
+      </div>
+      <div class="metric-card">
+        <p class="label">Convites</p>
+        <p class="value">{{ draws()[0].invitationsIssued }}</p>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
           <tr>
-            <td>{{ draw.drawNumber }}</td>
-            <td>{{ draw.date | date: 'dd/MM/yyyy' }}</td>
-            <td>{{ draw.category || 'Geral' }}</td>
-            <td>{{ draw.invitationsIssued }}</td>
-            <td>{{ draw.minimumCRS }}</td>
+            <th>Draw</th>
+            <th>Data</th>
+            <th>Programa</th>
+            <th>Convites</th>
+            <th>CRS</th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (draw of draws(); track draw.drawNumber) {
+            <tr>
+              <td><span class="draw-badge">{{ draw.drawNumber }}</span></td>
+              <td>{{ draw.date | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ draw.category | categoryLabel }}</td>
+              <td>{{ draw.invitationsIssued }}</td>
+              <td>{{ draw.minimumCRS }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
     <div class="pagination">
       <button (click)="goToPreviousPage()" [disabled]="currentPage() === 1">Anterior</button>

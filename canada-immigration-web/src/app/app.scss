@@ -1,19 +1,19 @@
 .tabs {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   padding: 1rem 2rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 0.5px solid var(--border-color);
 
   a {
     text-decoration: none;
-    color: #555;
-    padding: 0.5rem 1rem;
-    border-radius: 4px 4px 0 0;
+    color: var(--text-secondary);
+    padding: 0.5rem 0;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
 
     &.active {
-      color: #2c7a2c;
-      font-weight: bold;
-      border-bottom: 2px solid #2c7a2c;
+      color: var(--accent);
+      border-bottom-color: var(--accent);
     }
   }
 }

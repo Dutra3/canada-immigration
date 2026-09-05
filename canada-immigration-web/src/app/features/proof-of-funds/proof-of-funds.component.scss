@@ -1,5 +1,7 @@
 .proof-of-funds-container {
   padding: 2rem;
+  max-width: 900px;
+  color: var(--text-primary);
 }
 
 .form-group {
@@ -8,30 +10,49 @@
   align-items: center;
   margin: 1rem 0;
 
+  label {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
   input {
     padding: 0.5rem;
     width: 100px;
+    background: var(--bg-card);
+    border: 0.5px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
   }
 
   button {
     padding: 0.5rem 1rem;
     cursor: pointer;
+    background: transparent;
+    border: 0.5px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
   }
 }
 
 .result {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: #f0f8f0;
-  border-radius: 4px;
+  background: var(--bg-card-alt);
+  border: 0.5px solid var(--border-color);
+  border-radius: 12px;
 }
 
 .amount {
   font-size: 1.5rem;
-  font-weight: bold;
-  color: #2c7a2c;
+  font-weight: 500;
+  color: var(--accent-text);
 }
 
 .error {
-  color: #c0392b;
+  color: #e24b4a;
 }
