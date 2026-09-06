@@ -4,26 +4,29 @@ var builder = WebApplication.CreateBuilder(args);
 
 const string AngularDevCorsPolicy = "AngularDevCorsPolicy";
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var externalApiBaseUrl = builder.Configuration["ExternalApi:BaseUrl"]
+    ?? throw new InvalidOperationException("ExternalApi:BaseUrl não configurado em appsettings.json.");
+
 builder.Services.AddHttpClient<IExpressEntryDrawService, ExpressEntryDrawService>(client =>
 {
-    client.BaseAddress = new Uri("https://can-ee-draws.karanjit-sagun01.workers.dev/api/");
+    client.BaseAddress = new Uri(externalApiBaseUrl);
     client.Timeout = TimeSpan.FromSeconds(10);
 });
 
 builder.Services.AddScoped<IProofOfFundsService, ProofOfFundsService>();
 
+var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"]
+    ?? throw new InvalidOperationException("Cors:AllowedOrigin não configurado em appsettings.json.");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(AngularDevCorsPolicy, policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins(allowedOrigin)
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
@@ -31,7 +34,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
