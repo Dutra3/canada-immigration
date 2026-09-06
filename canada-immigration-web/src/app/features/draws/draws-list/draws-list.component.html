@@ -9,22 +9,24 @@
     <p class="error">{{ errorMessage() }}</p>
   }
 
-  @if (!isLoading() && !errorMessage() && draws().length > 0) {
+  @if (latestDraw()) {
     <div class="metrics">
       <div class="metric-card">
         <p class="label">Último draw</p>
-        <p class="value">#{{ draws()[0].drawNumber }}</p>
+        <p class="value">#{{ latestDraw()!.drawNumber }}</p>
       </div>
       <div class="metric-card">
         <p class="label">CRS mínimo</p>
-        <p class="value">{{ draws()[0].minimumCRS }}</p>
+        <p class="value">{{ latestDraw()!.minimumCRS }}</p>
       </div>
       <div class="metric-card">
         <p class="label">Convites</p>
-        <p class="value">{{ draws()[0].invitationsIssued }}</p>
+        <p class="value">{{ latestDraw()!.invitationsIssued }}</p>
       </div>
     </div>
+  }
 
+  @if (!isLoading() && !errorMessage() && draws().length > 0) {
     <div class="table-card">
       <table>
         <thead>

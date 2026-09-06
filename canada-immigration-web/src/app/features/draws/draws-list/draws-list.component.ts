@@ -13,6 +13,7 @@ import { ExpressEntryDraw, PagedResult } from '../../../models/express-entry-dra
 })
 export class DrawsListComponent implements OnInit {
   draws = signal<ExpressEntryDraw[]>([]);
+  latestDraw = signal<ExpressEntryDraw | null>(null);
   currentPage = signal(1);
   totalPages = signal(1);
   isLoading = signal(false);
@@ -22,6 +23,7 @@ export class DrawsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPage(1);
+    this.loadLatestDraw();
   }
 
   loadPage(page: number): void {
@@ -40,6 +42,13 @@ export class DrawsListComponent implements OnInit {
         this.errorMessage.set('Não foi possível carregar os dados. Tente novamente.');
         this.isLoading.set(false);
       }
+    });
+  }
+
+  loadLatestDraw(): void {
+    this.drawService.getLatestDraw().subscribe({
+      next: (draw) => this.latestDraw.set(draw),
+      error: (err) => console.error('Erro ao buscar o último draw', err)
     });
   }
 
