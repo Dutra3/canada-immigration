@@ -1,0 +1,63 @@
+<div class="pool-container">
+  <h1>Express Entry — Distribuição do Pool CRS</h1>
+
+  @if (isLoading()) {
+    <p>Carregando...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (!isLoading() && !errorMessage() && pool()) {
+    <div class="metrics">
+      <div class="metric-card">
+        <p class="label">Draw de referência</p>
+        <p class="value">#{{ pool()!.drawNumber }}</p>
+      </div>
+      <div class="metric-card">
+        <p class="label">Data</p>
+        <p class="value">{{ pool()!.drawDate | date: 'dd/MM/yyyy' }}</p>
+      </div>
+      <div class="metric-card">
+        <p class="label">Total no pool</p>
+        <p class="value">{{ pool()!.totalCandidates | number }}</p>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <svg
+        [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight()"
+        class="pool-chart"
+        role="img"
+        aria-label="Distribuição de candidatos por faixa de pontuação CRS"
+      >
+        @for (bar of chartBars(); track bar.range) {
+          <text
+            [attr.x]="labelWidth - 8"
+            [attr.y]="bar.y + barHeight / 2"
+            text-anchor="end"
+            dominant-baseline="middle"
+            class="bar-label"
+          >{{ bar.range }}</text>
+
+          <rect
+            [attr.x]="labelWidth"
+            [attr.y]="bar.y"
+            [attr.width]="bar.width"
+            [attr.height]="barHeight"
+            rx="4"
+            class="bar-rect"
+          ></rect>
+
+          <text
+            [attr.x]="labelWidth + bar.width + 8"
+            [attr.y]="bar.y + barHeight / 2"
+            dominant-baseline="middle"
+            class="bar-value"
+          >{{ bar.value | number }}</text>
+        }
+      </svg>
+    </div>
+  }
+</div>

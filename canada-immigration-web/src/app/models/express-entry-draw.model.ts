@@ -14,3 +14,16 @@ export interface PagedResult<T> {
   totalCount: number;
   totalPages: number;
 }
+
+export interface PoolScoreRange {
+  key: string;
+  range: string;
+  value: number;
+}
+
+export interface PoolDistribution {
+  drawNumber: number;
+  drawDate: string;
+  totalCandidates: number;
+  ranges: PoolScoreRange[];
+}

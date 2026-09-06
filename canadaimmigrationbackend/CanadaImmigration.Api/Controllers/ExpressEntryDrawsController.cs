@@ -17,7 +17,6 @@ public class ExpressEntryDrawsController : ControllerBase
         _drawService = drawService;
     }
 
-    // GET api/expressentrydraws?page=1&pageSize=20&year=2026&category=PNP
     [HttpGet]
     public async Task<ActionResult<PagedResult<ExpressEntryDraw>>> GetDraws(
         [FromQuery] int page = 1,
@@ -33,7 +32,6 @@ public class ExpressEntryDrawsController : ControllerBase
 
         var allDraws = await _drawService.GetDrawsAsync(year, category, cancellationToken);
 
-        // Ordena do mais recente pro mais antigo antes de paginar
         var ordered = allDraws.OrderByDescending(d => d.Date).ToList();
 
         var pageItems = ordered
@@ -52,7 +50,6 @@ public class ExpressEntryDrawsController : ControllerBase
         return Ok(result);
     }
 
-    // GET api/expressentrydraws/latest
     [HttpGet("latest")]
     public async Task<ActionResult<ExpressEntryDraw>> GetLatest(CancellationToken cancellationToken)
     {
@@ -66,7 +63,6 @@ public class ExpressEntryDrawsController : ControllerBase
         return Ok(latest);
     }
 
-    // GET api/expressentrydraws/pool
     [HttpGet("pool")]
     public async Task<ActionResult<PoolDistribution>> GetPoolDistribution(CancellationToken cancellationToken)
     {

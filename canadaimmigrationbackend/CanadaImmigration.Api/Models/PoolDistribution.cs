@@ -12,6 +12,9 @@ public class PoolDistribution
 
     [JsonPropertyName("ranges")]
     public List<PoolScoreRange> Ranges { get; set; } = new();
+
+    [JsonPropertyName("totalCandidates")]
+    public decimal TotalCandidates { get; set; }
 }
 
 public class PoolScoreRange
@@ -22,8 +25,7 @@ public class PoolScoreRange
     [JsonPropertyName("range")]
     public string Range { get; set; } = string.Empty;
 
-    // Vem como string com vírgula de milhar (ex: "19,542"), por isso não é int.
-    // A linha com Range="Total" também usa esse mesmo campo pro total geral.
     [JsonPropertyName("value")]
-    public string Value { get; set; } = string.Empty;
+    [JsonConverter(typeof(CommaSeparatedDecimalConverter))]
+    public decimal Value { get; set; }
 }

@@ -1,0 +1,56 @@
+.pool-container {
+  padding: 2rem;
+  max-width: 900px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+
+  .metric-card {
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 1rem;
+
+    .label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 0 0 4px;
+    }
+
+    .value {
+      font-size: 24px;
+      font-weight: 500;
+      margin: 0;
+      color: var(--text-primary);
+    }
+  }
+}
+
+.table-card {
+  background: var(--bg-card-alt);
+  border-radius: 12px;
+  border: 0.5px solid var(--border-color);
+  padding: 1.25rem;
+}
+
+.pool-chart {
+  width: 100%;
+  height: auto;
+}
+
+.bar-label,
+.bar-value {
+  font-size: 12px;
+  fill: var(--text-secondary);
+}
+
+.bar-rect {
+  fill: var(--accent-bg);
+}
+
+.error {
+  color: #e24b4a;
+}
