@@ -32,6 +32,18 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddSingleton(new EmailNotifierConfig
+{
+    SmtpServer = "smtp.gmail.com",
+    SmtpPort = 587,
+    SenderEmail = "seu-email@gmail.com",
+    SenderPassword = "sua-app-password",
+    RecipientEmail = "seu-email@gmail.com"
+});
+
+builder.Services.AddSingleton<EmailNotifier>();
+builder.Services.AddSingleton<UpdateCheckService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
