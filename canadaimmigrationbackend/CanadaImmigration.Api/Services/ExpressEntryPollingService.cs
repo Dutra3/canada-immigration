@@ -27,7 +27,9 @@ public class ExpressEntryPollingService : BackgroundService
     public static bool IsWithinSendingWindow(DateTimeOffset utcNow)
     {
         var brasiliaNow = TimeZoneInfo.ConvertTime(utcNow, BrasiliaTimeZone);
-        return brasiliaNow.Hour >= 6 && brasiliaNow.Hour < 23;
+        return brasiliaNow.DayOfWeek != DayOfWeek.Sunday
+            && brasiliaNow.Hour >= 7
+            && brasiliaNow.Hour < 19;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -44,7 +46,7 @@ public class ExpressEntryPollingService : BackgroundService
                 }
                 else
                 {
-                    _logger.LogInformation("Fora da janela de checagem (6h-23h Brasília). Pulando verificação.");
+                    _logger.LogInformation("Fora da janela de checagem (7h-19h, seg-sáb, Brasília). Pulando verificação.");
                 }
             }
             catch (Exception ex)
