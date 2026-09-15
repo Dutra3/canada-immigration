@@ -1,0 +1,58 @@
+.subscribe-container {
+  padding: 2rem;
+  max-width: 900px;
+  color: var(--text-primary);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  max-width: 400px;
+
+  label {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  input,
+  select {
+    padding: 0.5rem;
+    background: var(--bg-card);
+    border: 0.5px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+  }
+
+  select {
+    min-height: 160px;
+  }
+
+  small {
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+}
+
+button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background: transparent;
+  border: 0.5px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 6px;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.error {
+  color: #e24b4a;
+}
+
+.success {
+  color: #3fb950;
+}

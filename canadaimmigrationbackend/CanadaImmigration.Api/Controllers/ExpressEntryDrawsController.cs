@@ -75,4 +75,21 @@ public class ExpressEntryDrawsController : ControllerBase
 
         return Ok(pool);
     }
+
+    // Lista as categorias distintas já vistas nos draws, usada para popular o
+    // select de inscrição de e-mail no front-end.
+    [HttpGet("categories")]
+    public async Task<ActionResult<IReadOnlyList<string>>> GetCategories(CancellationToken cancellationToken)
+    {
+        var draws = await _drawService.GetDrawsAsync(cancellationToken: cancellationToken);
+
+        var categories = draws
+            .Select(d => d.Category)
+            .Where(c => !string.IsNullOrWhiteSpace(c))
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+
+        return Ok(categories);
+    }
 }

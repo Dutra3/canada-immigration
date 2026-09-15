@@ -1,4 +1,6 @@
+using CanadaImmigration.Api.Data;
 using CanadaImmigration.Api.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,13 @@ builder.Services.AddHttpClient<IExpressEntryDrawService, ExpressEntryDrawService
 
 builder.Services.AddScoped<IProofOfFundsService, ProofOfFundsService>();
 
+var connectionString = builder.Configuration.GetConnectionString("Default")
+    ?? "Data Source=canadaimmigration.db";
+
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
+
+builder.Services.AddScoped<ISubscriberService, SubscriberService>();
+
 var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"]
     ?? throw new InvalidOperationException("Cors:AllowedOrigin não configurado em appsettings.json.");
 
@@ -32,19 +41,19 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSingleton(new EmailNotifierConfig
-{
-    SmtpServer = "smtp.gmail.com",
-    SmtpPort = 587,
-    SenderEmail = "seu-email@gmail.com",
-    SenderPassword = "sua-app-password",
-    RecipientEmail = "seu-email@gmail.com"
-});
-
+// Credenciais de SMTP nunca ficam no código: vêm de appsettings.json (Development)
+// ou de variáveis de ambiente / user-secrets em produção. Ver seção "Email" no appsettings.
+builder.Services.Configure<EmailNotifierConfig>(builder.Configuration.GetSection("Email"));
 builder.Services.AddSingleton<EmailNotifier>();
-builder.Services.AddSingleton<UpdateCheckService>();
+builder.Services.AddHostedService<ExpressEntryPollingService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
