@@ -1,0 +1,12 @@
+# Build outputs (nunca versionar; são regenerados por `dotnet build`/`dotnet restore`)
+bin/
+obj/
+
+# Bancos de dados locais (SQLite) e arquivos auxiliares de WAL/SHM
+*.db
+*.db-shm
+*.db-wal
+
+# User secrets / IDE
+.vs/
+*.user
