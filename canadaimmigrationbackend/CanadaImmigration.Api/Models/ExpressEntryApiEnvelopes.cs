@@ -2,8 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace CanadaImmigration.Api.Models;
 
-// A API externa embrulha os resultados em { "draws": [...] } e { "draw": {...} }.
-// Esses envelopes existem só pra desserializar; o Controller nunca expõe eles direto.
 internal class DrawsApiEnvelope
 {
     [JsonPropertyName("draws")]

@@ -4,11 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CanadaImmigration.Api.Services;
 
-// Fica de olho na API externa de draws e, quando aparece uma rodada nova,
-// dispara e-mail para os assinantes interessados na categoria daquele draw.
-//
-// Só faz a checagem dentro do horário comercial de Brasília (6h-23h), pra evitar
-// chamadas desnecessárias à API externa durante a madrugada.
 public class ExpressEntryPollingService : BackgroundService
 {
     private static readonly TimeZoneInfo BrasiliaTimeZone = ResolveBrasiliaTimeZone();
@@ -29,7 +24,6 @@ public class ExpressEntryPollingService : BackgroundService
         _pollingInterval = TimeSpan.FromMinutes(minutes);
     }
 
-    // Extraído como método estático para poder ser testado sem precisar do BackgroundService inteiro.
     public static bool IsWithinSendingWindow(DateTimeOffset utcNow)
     {
         var brasiliaNow = TimeZoneInfo.ConvertTime(utcNow, BrasiliaTimeZone);
@@ -78,8 +72,6 @@ public class ExpressEntryPollingService : BackgroundService
         var state = await db.DrawCheckStates.FirstOrDefaultAsync(cancellationToken);
         if (state is null)
         {
-            // Primeira execução: só registra o estado atual, sem notificar (evita
-            // disparar e-mail de "novo draw" pra rodadas que já existiam antes do sistema existir).
             db.DrawCheckStates.Add(new DrawCheckState
             {
                 LastDrawNumber = latestDraw.DrawNumber,
@@ -112,7 +104,6 @@ public class ExpressEntryPollingService : BackgroundService
 
     private static TimeZoneInfo ResolveBrasiliaTimeZone()
     {
-        // O ID do fuso muda entre Windows ("E. South America Standard Time") e IANA/Linux/macOS ("America/Sao_Paulo").
         try
         {
             return TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");

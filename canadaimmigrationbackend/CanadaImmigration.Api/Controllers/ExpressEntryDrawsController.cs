@@ -76,8 +76,6 @@ public class ExpressEntryDrawsController : ControllerBase
         return Ok(pool);
     }
 
-    // Lista as categorias distintas já vistas nos draws, usada para popular o
-    // select de inscrição de e-mail no front-end.
     [HttpGet("categories")]
     public async Task<ActionResult<IReadOnlyList<string>>> GetCategories(CancellationToken cancellationToken)
     {

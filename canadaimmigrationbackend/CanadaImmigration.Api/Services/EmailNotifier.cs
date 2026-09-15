@@ -14,7 +14,6 @@ public class EmailNotifierConfig
     public string SenderPassword { get; set; } = string.Empty;
     public string SenderDisplayName { get; set; } = "Canada Immigration Tracker";
 
-    // URL base do site, usada para montar o link de descadastro nos e-mails.
     public string SiteBaseUrl { get; set; } = string.Empty;
 }
 
@@ -55,7 +54,6 @@ public class EmailNotifier
         }
         catch (Exception ex)
         {
-            // Uma falha de envio para um assinante não deve derrubar o processamento dos demais.
             _logger.LogError(ex, "Falha ao enviar e-mail de notificação para {Email}", recipientEmail);
         }
     }

@@ -1,7 +1,5 @@
 namespace CanadaImmigration.Api.Models;
 
-// Envelope genérico de paginação, usado pelo Controller pra devolver
-// 20 draws por página, como definido no escopo do projeto.
 public class PagedResult<T>
 {
     public IReadOnlyList<T> Items { get; set; } = Array.Empty<T>();

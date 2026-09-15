@@ -24,7 +24,6 @@ public class ExpressEntryDrawService : IExpressEntryDrawService
         if (year.HasValue) query.Add($"year={year.Value}");
         if (!string.IsNullOrWhiteSpace(category)) query.Add($"category={Uri.EscapeDataString(category)}");
 
-        // Caminho relativo (SEM barra inicial) porque o BaseAddress já termina em /api/
         var url = "draws" + (query.Count > 0 ? "?" + string.Join("&", query) : string.Empty);
 
         try

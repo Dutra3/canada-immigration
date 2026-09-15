@@ -15,7 +15,6 @@ public class ProofOfFundsController : ControllerBase
         _proofOfFundsService = proofOfFundsService;
     }
 
-    // GET api/proofoffunds?familySize=4
     [HttpGet]
     public ActionResult<ProofOfFundsResult> Get([FromQuery] int familySize)
     {

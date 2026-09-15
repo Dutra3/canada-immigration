@@ -1,6 +1,5 @@
 namespace CanadaImmigration.Api.Models;
 
-// Uma categoria de draw que o assinante quer receber ("ALL" = qualquer categoria).
 public class SubscriberCategory
 {
     public int Id { get; set; }

@@ -44,7 +44,6 @@ public class SubscriberService : ISubscriberService
             return SubscribeResult.Created;
         }
 
-        // Já existe: atualiza a lista de categorias desejadas (substitui pelas novas escolhas).
         _db.SubscriberCategories.RemoveRange(existing.Categories);
         existing.Categories = normalizedCategories.Select(c => new SubscriberCategory { Category = c, SubscriberId = existing.Id }).ToList();
         await _db.SaveChangesAsync(cancellationToken);
@@ -90,7 +89,6 @@ public class SubscriberService : ISubscriberService
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        // Se o usuário marcou "TODAS/QUALQUER", as demais escolhas ficam redundantes.
         if (cleaned.Any(c => string.Equals(c, Subscriber.AllCategoriesValue, StringComparison.OrdinalIgnoreCase)))
         {
             return new List<string> { Subscriber.AllCategoriesValue };

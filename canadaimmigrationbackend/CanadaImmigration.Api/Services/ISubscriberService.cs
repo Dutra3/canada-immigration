@@ -16,7 +16,5 @@ public interface ISubscriberService
 
     Task<bool> UnsubscribeAsync(string token, CancellationToken cancellationToken = default);
 
-    // Assinantes que devem ser avisados sobre um draw da categoria informada
-    // (inclui quem escolheu "ALL").
     Task<IReadOnlyList<Subscriber>> GetSubscribersForCategoryAsync(string category, CancellationToken cancellationToken = default);
 }

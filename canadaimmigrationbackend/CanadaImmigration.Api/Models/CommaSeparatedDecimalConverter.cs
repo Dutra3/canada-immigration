@@ -8,7 +8,6 @@ public class CommaSeparatedDecimalConverter : JsonConverter<decimal>
 {
     public override decimal Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        // Defensivo: se um dia a API externa passar a mandar número puro (sem aspas),
         if (reader.TokenType == JsonTokenType.Number)
         {
             return reader.GetDecimal();

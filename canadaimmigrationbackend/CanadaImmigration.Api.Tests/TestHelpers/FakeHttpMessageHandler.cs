@@ -2,8 +2,6 @@ using System.Net;
 
 namespace CanadaImmigration.Api.Tests.TestHelpers;
 
-// Simula respostas HTTP sem fazer nenhuma chamada de rede de verdade.
-// Você passa uma função que decide o que responder pra cada request.
 public class FakeHttpMessageHandler : HttpMessageHandler
 {
     private readonly Func<HttpRequestMessage, HttpResponseMessage> _responder;
