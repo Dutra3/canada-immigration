@@ -31,6 +31,10 @@ export class ExpressEntryDrawService {
     return this.http.get<PoolDistribution>(`${this.baseUrl}/pool`);
   }
 
+  getCategories(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}/categories`);
+  }
+
   getLatestDraw(): Observable<ExpressEntryDraw> {
     return this.http.get<ExpressEntryDraw>(`${this.baseUrl}/latest`);
   }

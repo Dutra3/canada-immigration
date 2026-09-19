@@ -1,13 +1,16 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CategoryLabelPipe } from '../../../core/pipes/category-label.pipe';
 import { ExpressEntryDrawService } from '../../../core/services/express-entry-draw.service';
 import { ExpressEntryDraw, PagedResult } from '../../../models/express-entry-draw.model';
 
+const FIRST_EXPRESS_ENTRY_YEAR = 2015;
+
 @Component({
   selector: 'app-draws-list',
   standalone: true,
-  imports: [CommonModule, CategoryLabelPipe],
+  imports: [CommonModule, FormsModule, CategoryLabelPipe],
   templateUrl: './draws-list.component.html',
   styleUrl: './draws-list.component.scss'
 })
@@ -19,18 +22,39 @@ export class DrawsListComponent implements OnInit {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
 
+  categories = signal<string[]>([]);
+  selectedYear = signal<number | null>(null);
+  selectedCategory = signal<string | null>(null);
+
+  readonly years: number[] = (() => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: currentYear - FIRST_EXPRESS_ENTRY_YEAR + 1 }, (_, i) => currentYear - i);
+  })();
+
   constructor(private drawService: ExpressEntryDrawService) {}
 
   ngOnInit(): void {
     this.loadPage(1);
     this.loadLatestDraw();
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.drawService.getCategories().subscribe({
+      next: (categories) => this.categories.set(categories),
+      error: (err) => console.error('Erro ao buscar categorias', err)
+    });
+  }
+
+  onFilterChange(): void {
+    this.loadPage(1);
   }
 
   loadPage(page: number): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.drawService.getDraws(page).subscribe({
+    this.drawService.getDraws(page, 20, this.selectedYear() ?? undefined, this.selectedCategory() ?? undefined).subscribe({
       next: (result: PagedResult<ExpressEntryDraw>) => {
         this.draws.set(result.items);
         this.currentPage.set(result.page);

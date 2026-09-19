@@ -29,6 +29,33 @@
   }
 }
 
+.filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    select {
+      padding: 0.5rem;
+      background: var(--bg-card);
+      border: 0.5px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      min-width: 180px;
+    }
+  }
+}
+
 .table-card {
   background: var(--bg-card-alt);
   border-radius: 12px;

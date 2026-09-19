@@ -99,6 +99,20 @@ describe('ExpressEntryDrawService', () => {
     });
   });
 
+  describe('getCategories', () => {
+    it('deve chamar /categories e devolver a lista de categorias', () => {
+      const mockCategories = ['CEC', 'French', 'PNP'];
+
+      service.getCategories().subscribe((result) => {
+        expect(result).toEqual(mockCategories);
+      });
+
+      const req = httpMock.expectOne(`${baseUrl}/categories`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockCategories);
+    });
+  });
+
   describe('getPoolDistribution', () => {
     it('deve chamar /pool e devolver a distribuição do pool', () => {
       const mockPool: PoolDistribution = {

@@ -25,7 +25,10 @@ describe('DrawsListComponent', () => {
   async function setup(fakeService: Partial<ExpressEntryDrawService>) {
     await TestBed.configureTestingModule({
       imports: [DrawsListComponent],
-      providers: [{ provide: ExpressEntryDrawService, useValue: fakeService }],
+      providers: [{
+        provide: ExpressEntryDrawService,
+        useValue: { getCategories: () => of([]), ...fakeService },
+      }],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(DrawsListComponent);
@@ -48,7 +51,7 @@ describe('DrawsListComponent', () => {
       const fixture = await setup({ getDraws: getDrawsSpy, getLatestDraw: getLatestDrawSpy });
       fixture.detectChanges();
 
-      expect(getDrawsSpy).toHaveBeenCalledWith(1);
+      expect(getDrawsSpy).toHaveBeenCalledWith(1, 20, undefined, undefined);
       expect(getLatestDrawSpy).toHaveBeenCalled();
     });
 
@@ -119,6 +122,55 @@ describe('DrawsListComponent', () => {
     });
   });
 
+  describe('filtros', () => {
+    it('deve chamar getCategories no init para preencher o select de categorias', async () => {
+      const getCategoriesSpy = vi.fn().mockReturnValue(of(['CEC', 'PNP']));
+
+      const fixture = await setup({
+        getDraws: () => of(mockPagedResult),
+        getLatestDraw: () => of(mockDraw),
+        getCategories: getCategoriesSpy,
+      });
+      fixture.detectChanges();
+
+      expect(getCategoriesSpy).toHaveBeenCalled();
+      expect(fixture.componentInstance.categories()).toEqual(['CEC', 'PNP']);
+    });
+
+    it('onFilterChange deve recarregar a página 1 com os filtros selecionados', async () => {
+      const getDrawsSpy = vi.fn().mockReturnValue(of(mockPagedResult));
+
+      const fixture = await setup({ getDraws: getDrawsSpy, getLatestDraw: () => of(mockDraw) });
+      fixture.detectChanges();
+      getDrawsSpy.mockClear();
+
+      const component = fixture.componentInstance;
+
+      component.selectedYear.set(2025);
+      component.onFilterChange();
+      expect(getDrawsSpy).toHaveBeenCalledWith(1, 20, 2025, undefined);
+
+      component.selectedCategory.set('CEC');
+      component.onFilterChange();
+      expect(getDrawsSpy).toHaveBeenCalledWith(1, 20, 2025, 'CEC');
+    });
+
+    it('paginação deve manter os filtros aplicados', async () => {
+      const getDrawsSpy = vi.fn().mockReturnValue(of({ ...mockPagedResult, totalPages: 3 }));
+
+      const fixture = await setup({ getDraws: getDrawsSpy, getLatestDraw: () => of(mockDraw) });
+      fixture.detectChanges();
+      getDrawsSpy.mockClear();
+
+      const component = fixture.componentInstance;
+      component.selectedYear.set(2024);
+      component.selectedCategory.set('PNP');
+      component.goToNextPage();
+
+      expect(getDrawsSpy).toHaveBeenCalledWith(2, 20, 2024, 'PNP');
+    });
+  });
+
   describe('paginação', () => {
     it('goToNextPage deve chamar getDraws com a página seguinte', async () => {
       const getDrawsSpy = vi.fn().mockReturnValue(
@@ -130,7 +182,7 @@ describe('DrawsListComponent', () => {
 
       fixture.componentInstance.goToNextPage();
 
-      expect(getDrawsSpy).toHaveBeenCalledWith(2);
+      expect(getDrawsSpy).toHaveBeenCalledWith(2, 20, undefined, undefined);
     });
 
     it('goToPreviousPage não deve chamar getDraws quando já está na página 1', async () => {

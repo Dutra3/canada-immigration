@@ -26,6 +26,40 @@
     </div>
   }
 
+  <div class="filters">
+    <div class="form-group">
+      <label for="year-filter">Ano</label>
+      <select
+        id="year-filter"
+        [ngModel]="selectedYear()"
+        (ngModelChange)="selectedYear.set($event); onFilterChange()"
+      >
+        <option [ngValue]="null">Todos os anos</option>
+        @for (year of years; track year) {
+          <option [ngValue]="year">{{ year }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="category-filter">Categoria</label>
+      <select
+        id="category-filter"
+        [ngModel]="selectedCategory()"
+        (ngModelChange)="selectedCategory.set($event); onFilterChange()"
+      >
+        <option [ngValue]="null">Todas as categorias</option>
+        @for (category of categories(); track category) {
+          <option [ngValue]="category">{{ category | categoryLabel }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (!isLoading() && !errorMessage() && draws().length === 0) {
+    <p>Nenhum draw encontrado para os filtros selecionados.</p>
+  }
+
   @if (!isLoading() && !errorMessage() && draws().length > 0) {
     <div class="table-card">
       <table>
