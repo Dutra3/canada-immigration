@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/Dutra3/canada-immigration/actions/workflows/ci.yml/badge.svg)](https://github.com/Dutra3/canada-immigration/actions/workflows/ci.yml)
 
-Sistema web sem login para consultar dados públicos de imigração canadense (Express Entry) e receber alertas por e-mail quando uma nova chamada (draw) for publicada, feito como projeto pessoal de estudo e portfólio.
+Sistema web sem login para consultar dados públicos de imigração canadense (Express Entry), calcular sua nota CRS e receber alertas por e-mail quando uma nova chamada (draw) for publicada.
+
+Projeto pessoal de estudo e portfólio, feito para praticar .NET 8 / C# e Angular 22 com boas práticas — arquitetura em camadas, testes automatizados nas duas pontas e configuração via ambiente em vez de valores hardcoded. Dependências mínimas: no backend, apenas EF Core/SQLite para persistência; no frontend, nenhuma biblioteca adicional de UI.
 
 ## O que o projeto faz
 
@@ -117,7 +119,3 @@ Para gerar um novo deploy do frontend após alterações:
 cd canada-immigration-web
 ng deploy --base-href=/canada-immigration/
 ```
-
-## Sobre o projeto
-
-Este é um projeto pessoal, feito para praticar .NET 8 / C# e Angular 22 com boas práticas (arquitetura em camadas, testes automatizados em ambas as pontas, configuração via ambiente em vez de valores hardcoded), com poucas dependências além dos scaffolds oficiais do `dotnet new` e `ng new` — no backend, apenas EF Core/SQLite para persistência; no frontend, nenhuma biblioteca adicional de UI.
