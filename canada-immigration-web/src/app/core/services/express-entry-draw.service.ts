@@ -35,6 +35,10 @@ export class ExpressEntryDrawService {
     return this.http.get<string[]>(`${this.baseUrl}/categories`);
   }
 
+  getYears(): Observable<number[]> {
+    return this.http.get<number[]>(`${this.baseUrl}/years`);
+  }
+
   getLatestDraw(): Observable<ExpressEntryDraw> {
     return this.http.get<ExpressEntryDraw>(`${this.baseUrl}/latest`);
   }

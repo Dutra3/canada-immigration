@@ -90,4 +90,18 @@ public class ExpressEntryDrawsController : ControllerBase
 
         return Ok(categories);
     }
+
+    [HttpGet("years")]
+    public async Task<ActionResult<IReadOnlyList<int>>> GetYears(CancellationToken cancellationToken)
+    {
+        var draws = await _drawService.GetDrawsAsync(cancellationToken: cancellationToken);
+
+        var years = draws
+            .Select(d => d.Date.Year)
+            .Distinct()
+            .OrderByDescending(y => y)
+            .ToList();
+
+        return Ok(years);
+    }
 }

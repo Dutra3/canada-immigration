@@ -113,6 +113,20 @@ describe('ExpressEntryDrawService', () => {
     });
   });
 
+  describe('getYears', () => {
+    it('deve chamar /years e devolver a lista de anos', () => {
+      const mockYears = [2026, 2025, 2024];
+
+      service.getYears().subscribe((result) => {
+        expect(result).toEqual(mockYears);
+      });
+
+      const req = httpMock.expectOne(`${baseUrl}/years`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockYears);
+    });
+  });
+
   describe('getPoolDistribution', () => {
     it('deve chamar /pool e devolver a distribuição do pool', () => {
       const mockPool: PoolDistribution = {

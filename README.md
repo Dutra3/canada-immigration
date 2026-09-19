@@ -6,6 +6,7 @@ Sistema web sem login para consultar dados públicos de imigração canadense (E
 
 - **Express Entry Draws**: histórico paginado das chamadas (draws) do sistema Express Entry, com programa, data, convites emitidos e pontuação CRS mínima, com filtros por ano e por categoria. Traz também um destaque sempre atualizado com o draw mais recente, independente da página que você está navegando.
 - **Distribuição do Pool CRS**: gráfico de barras mostrando quantos candidatos existem em cada faixa de pontuação CRS, com base no draw mais recente.
+- **Tendência do corte CRS**: gráfico de linha mostrando a evolução da pontuação CRS mínima ao longo do tempo, com filtros por período (ano) e categoria.
 - **Proof of Funds**: calculadora do valor mínimo em fundos exigido pelo IRCC (Immigration, Refugees and Citizenship Canada), de acordo com o número de familiares.
 - **Alertas por e-mail de novos draws**: na página "Receber E-mail" você cadastra seu e-mail e escolhe as categorias de draws que quer acompanhar (ou "Todas/Qualquer"). Um serviço em background no backend verifica periodicamente a API pública e, ao detectar um draw novo, envia um e-mail para os inscritos daquela categoria. Todo e-mail inclui um link para cancelar a inscrição.
 
@@ -33,7 +34,7 @@ canadaimmigrationtracker/
 │   │   └── Data/                       ← AppDbContext (EF Core) e migrations do SQLite
 │   └── CanadaImmigration.Api.Tests/    ← testes xUnit
 └── canada-immigration-web/             ← projeto Angular (standalone components)
-    └── src/app/features/               ← telas: draws, pool, proof-of-funds e subscribe
+    └── src/app/features/               ← telas: draws, pool, trends, proof-of-funds e subscribe
 ```
 
 ## Como rodar o backend
@@ -87,8 +88,7 @@ ng serve
 
 **Backend (xUnit):**
 ```bash
-cd canadaimmigrationbackend
-dotnet test
+dotnet test canadaimmigrationtracker.slnx
 ```
 
 **Frontend (Vitest):**

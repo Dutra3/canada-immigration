@@ -27,7 +27,7 @@ describe('DrawsListComponent', () => {
       imports: [DrawsListComponent],
       providers: [{
         provide: ExpressEntryDrawService,
-        useValue: { getCategories: () => of([]), ...fakeService },
+        useValue: { getCategories: () => of([]), getYears: () => of([]), ...fakeService },
       }],
     }).compileComponents();
 
@@ -135,6 +135,20 @@ describe('DrawsListComponent', () => {
 
       expect(getCategoriesSpy).toHaveBeenCalled();
       expect(fixture.componentInstance.categories()).toEqual(['CEC', 'PNP']);
+    });
+
+    it('deve chamar getYears no init para preencher o select de anos', async () => {
+      const getYearsSpy = vi.fn().mockReturnValue(of([2026, 2025]));
+
+      const fixture = await setup({
+        getDraws: () => of(mockPagedResult),
+        getLatestDraw: () => of(mockDraw),
+        getYears: getYearsSpy,
+      });
+      fixture.detectChanges();
+
+      expect(getYearsSpy).toHaveBeenCalled();
+      expect(fixture.componentInstance.years()).toEqual([2026, 2025]);
     });
 
     it('onFilterChange deve recarregar a página 1 com os filtros selecionados', async () => {

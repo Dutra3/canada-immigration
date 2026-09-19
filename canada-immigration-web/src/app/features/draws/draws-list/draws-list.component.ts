@@ -5,8 +5,6 @@ import { CategoryLabelPipe } from '../../../core/pipes/category-label.pipe';
 import { ExpressEntryDrawService } from '../../../core/services/express-entry-draw.service';
 import { ExpressEntryDraw, PagedResult } from '../../../models/express-entry-draw.model';
 
-const FIRST_EXPRESS_ENTRY_YEAR = 2015;
-
 @Component({
   selector: 'app-draws-list',
   standalone: true,
@@ -23,13 +21,9 @@ export class DrawsListComponent implements OnInit {
   errorMessage = signal<string | null>(null);
 
   categories = signal<string[]>([]);
+  years = signal<number[]>([]);
   selectedYear = signal<number | null>(null);
   selectedCategory = signal<string | null>(null);
-
-  readonly years: number[] = (() => {
-    const currentYear = new Date().getFullYear();
-    return Array.from({ length: currentYear - FIRST_EXPRESS_ENTRY_YEAR + 1 }, (_, i) => currentYear - i);
-  })();
 
   constructor(private drawService: ExpressEntryDrawService) {}
 
@@ -37,12 +31,20 @@ export class DrawsListComponent implements OnInit {
     this.loadPage(1);
     this.loadLatestDraw();
     this.loadCategories();
+    this.loadYears();
   }
 
   loadCategories(): void {
     this.drawService.getCategories().subscribe({
       next: (categories) => this.categories.set(categories),
       error: (err) => console.error('Erro ao buscar categorias', err)
+    });
+  }
+
+  loadYears(): void {
+    this.drawService.getYears().subscribe({
+      next: (years) => this.years.set(years),
+      error: (err) => console.error('Erro ao buscar anos', err)
     });
   }
 

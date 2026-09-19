@@ -1,0 +1,100 @@
+<div class="trend-container">
+  <h1>Express Entry — Tendência do CRS mínimo</h1>
+
+  @if (isLoading()) {
+    <p>Carregando...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  <div class="filters">
+    <div class="form-group">
+      <label for="year-filter">Período</label>
+      <select
+        id="year-filter"
+        [ngModel]="selectedYear()"
+        (ngModelChange)="selectedYear.set($event); onFilterChange()"
+      >
+        <option [ngValue]="null">Todo o período</option>
+        @for (year of years(); track year) {
+          <option [ngValue]="year">{{ year }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="category-filter">Categoria</label>
+      <select
+        id="category-filter"
+        [ngModel]="selectedCategory()"
+        (ngModelChange)="selectedCategory.set($event); onFilterChange()"
+        [disabled]="isLoadingCategories()"
+      >
+        <option [ngValue]="null">Todas as categorias</option>
+        @for (category of categories(); track category) {
+          <option [ngValue]="category">{{ category | categoryLabel }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (!isLoading() && !errorMessage() && draws().length === 0) {
+    <p>Nenhum draw encontrado para os filtros selecionados.</p>
+  }
+
+  @if (!isLoading() && !errorMessage() && chart().points.length > 0) {
+    <div class="table-card">
+      <svg
+        [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+        class="trend-chart"
+        role="img"
+        aria-label="Evolução da pontuação CRS mínima por draw"
+      >
+        @for (tick of chart().yTicks; track tick.value) {
+          <line
+            [attr.x1]="paddingLeft"
+            [attr.x2]="chartWidth - paddingRight"
+            [attr.y1]="tick.y"
+            [attr.y2]="tick.y"
+            class="grid-line"
+          />
+          <text
+            [attr.x]="paddingLeft - 8"
+            [attr.y]="tick.y"
+            text-anchor="end"
+            dominant-baseline="middle"
+            class="tick-label"
+          >{{ tick.value }}</text>
+        }
+
+        @for (label of chart().xLabels; track $index) {
+          <text
+            [attr.x]="label.x"
+            [attr.y]="chartHeight - 12"
+            text-anchor="middle"
+            class="tick-label"
+          >{{ label.date | date:'MM/yy' }}</text>
+        }
+
+        <polyline
+          [attr.points]="chart().polyline"
+          class="trend-line"
+          fill="none"
+        />
+
+        @for (point of chart().points; track point.drawNumber) {
+          <circle
+            [attr.cx]="point.x"
+            [attr.cy]="point.y"
+            r="3"
+            class="trend-point"
+          >
+            <title>#{{ point.drawNumber }} · {{ point.date | date:'dd/MM/yyyy' }} · CRS {{ point.minimumCrs }} · {{ point.category | categoryLabel }}</title>
+          </circle>
+        }
+      </svg>
+    </div>
+  }
+</div>

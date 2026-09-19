@@ -1,0 +1,71 @@
+.trend-container {
+  padding: 2rem;
+  max-width: 900px;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    select {
+      padding: 0.5rem;
+      background: var(--bg-card);
+      border: 0.5px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      min-width: 180px;
+    }
+  }
+}
+
+.table-card {
+  background: var(--bg-card-alt);
+  border-radius: 12px;
+  border: 0.5px solid var(--border-color);
+  padding: 1rem 1.25rem;
+}
+
+.trend-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.grid-line {
+  stroke: var(--border-color);
+  stroke-width: 0.5;
+}
+
+.tick-label {
+  fill: var(--text-secondary);
+  font-size: 11px;
+}
+
+.trend-line {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.trend-point {
+  fill: var(--accent);
+
+  &:hover {
+    fill: var(--accent-text);
+  }
+}
+
+.error {
+  color: #e24b4a;
+}
