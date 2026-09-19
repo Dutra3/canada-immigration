@@ -14,6 +14,8 @@ builder.Services.AddSwaggerGen();
 var externalApiBaseUrl = builder.Configuration["ExternalApi:BaseUrl"]
     ?? throw new InvalidOperationException("ExternalApi:BaseUrl não configurado em appsettings.json.");
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddHttpClient<IExpressEntryDrawService, ExpressEntryDrawService>(client =>
 {
     client.BaseAddress = new Uri(externalApiBaseUrl);

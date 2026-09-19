@@ -1,6 +1,9 @@
 using CanadaImmigration.Api.Services;
 using CanadaImmigration.Api.Tests.TestHelpers;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Net;
 using System.Text.Json;
 using Xunit;
 
@@ -8,15 +11,41 @@ namespace CanadaImmigration.Api.Tests.Services;
 
 public class ExpressEntryDrawServiceTests
 {
-    private static ExpressEntryDrawService CreateService(string fakeJsonResponse)
+    private static ExpressEntryDrawService CreateService(
+        HttpMessageHandler handler,
+        IMemoryCache? cache = null,
+        IConfiguration? configuration = null)
     {
-        var handler = FakeHttpMessageHandler.ReturningJson(fakeJsonResponse);
         var httpClient = new HttpClient(handler)
         {
             BaseAddress = new Uri("https://fake-api.test/api/")
         };
 
-        return new ExpressEntryDrawService(httpClient, NullLogger<ExpressEntryDrawService>.Instance);
+        return new ExpressEntryDrawService(
+            httpClient,
+            cache ?? new MemoryCache(new MemoryCacheOptions()),
+            configuration ?? new ConfigurationManager(),
+            NullLogger<ExpressEntryDrawService>.Instance);
+    }
+
+    private static ExpressEntryDrawService CreateService(
+        string fakeJsonResponse,
+        IMemoryCache? cache = null,
+        IConfiguration? configuration = null)
+    {
+        return CreateService(FakeHttpMessageHandler.ReturningJson(fakeJsonResponse), cache, configuration);
+    }
+
+    private static FakeHttpMessageHandler CountingHandler(string json, Action onCall)
+    {
+        return new FakeHttpMessageHandler(_ =>
+        {
+            onCall();
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
+            };
+        });
     }
 
     [Fact]
@@ -220,5 +249,63 @@ public class ExpressEntryDrawServiceTests
 
         Assert.Equal(15, pool.Ranges.Count);
         Assert.Equal(226673m, pool.TotalCandidates);
+    }
+
+    [Fact]
+    public async Task GetDrawsAsync_SecondCallWithSameFilters_UsesCache()
+    {
+        const string json = """{ "draws": [] }""";
+        var calls = 0;
+        var service = CreateService(CountingHandler(json, () => calls++));
+
+        await service.GetDrawsAsync();
+        await service.GetDrawsAsync();
+
+        Assert.Equal(1, calls);
+    }
+
+    [Fact]
+    public async Task GetDrawsAsync_DifferentFilters_CreateSeparateCacheEntries()
+    {
+        const string json = """{ "draws": [] }""";
+        var calls = 0;
+        var service = CreateService(CountingHandler(json, () => calls++));
+
+        await service.GetDrawsAsync();
+        await service.GetDrawsAsync(year: 2026);
+        await service.GetDrawsAsync(category: "CEC");
+
+        Assert.Equal(3, calls);
+    }
+
+    [Fact]
+    public async Task GetLatestDrawAsync_SecondCall_UsesCache()
+    {
+        const string json = """
+        { "draw": { "drawNumber": 439, "date": "2026-09-01", "invitationsIssued": 2000, "minimumCRS": 521, "category": "CEC", "year": "2026" } }
+        """;
+        var calls = 0;
+        var service = CreateService(CountingHandler(json, () => calls++));
+
+        await service.GetLatestDrawAsync();
+        await service.GetLatestDrawAsync();
+
+        Assert.Equal(1, calls);
+    }
+
+    [Fact]
+    public async Task GetDrawsAsync_WithZeroCacheMinutes_RefetchesEveryCall()
+    {
+        const string json = """{ "draws": [] }""";
+        var configuration = new ConfigurationManager();
+        configuration["ExternalApi:CacheMinutes"] = "0";
+
+        var calls = 0;
+        var service = CreateService(CountingHandler(json, () => calls++), configuration: configuration);
+
+        await service.GetDrawsAsync();
+        await service.GetDrawsAsync();
+
+        Assert.Equal(2, calls);
     }
 }

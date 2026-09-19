@@ -49,6 +49,7 @@ dotnet run
 - A API sobe por padrão em `http://localhost:5088` (confirme no terminal ao rodar, ou em `Properties/launchSettings.json` — a porta pode variar entre máquinas).
 - Documentação interativa (Swagger) disponível em `http://localhost:5088/swagger`.
 - CORS e a URL da API externa são configurados via `appsettings.json` (chaves `Cors:AllowedOrigin` e `ExternalApi:BaseUrl`), não hardcoded no código.
+- As respostas da API externa ficam em **cache em memória por 15 minutos** (`IMemoryCache`), para não bater na API community a cada request — configurável via `ExternalApi:CacheMinutes`.
 - Na primeira execução, o backend cria automaticamente o banco SQLite `canadaimmigration.db` na pasta do projeto, aplicando as migrations de `Data/Migrations/` no startup. A connection string pode ser alterada via `ConnectionStrings:Default` no `appsettings.json`.
 
 ### Configurando as notificações por e-mail (opcional)

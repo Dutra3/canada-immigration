@@ -1,24 +1,76 @@
 using System.Net.Http.Json;
 using System.Linq;
 using CanadaImmigration.Api.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CanadaImmigration.Api.Services;
 
 public class ExpressEntryDrawService : IExpressEntryDrawService
 {
+    private const int DefaultCacheMinutes = 15;
+
     private readonly HttpClient _httpClient;
+    private readonly IMemoryCache _cache;
+    private readonly TimeSpan _cacheDuration;
     private readonly ILogger<ExpressEntryDrawService> _logger;
 
-    public ExpressEntryDrawService(HttpClient httpClient, ILogger<ExpressEntryDrawService> logger)
+    public ExpressEntryDrawService(
+        HttpClient httpClient,
+        IMemoryCache cache,
+        IConfiguration configuration,
+        ILogger<ExpressEntryDrawService> logger)
     {
         _httpClient = httpClient;
+        _cache = cache;
         _logger = logger;
+        _cacheDuration = TimeSpan.FromMinutes(
+            configuration.GetValue<int?>("ExternalApi:CacheMinutes") ?? DefaultCacheMinutes);
     }
 
-    public async Task<IReadOnlyList<ExpressEntryDraw>> GetDrawsAsync(
+    public Task<IReadOnlyList<ExpressEntryDraw>> GetDrawsAsync(
         int? year = null,
         string? category = null,
         CancellationToken cancellationToken = default)
+    {
+        var cacheKey = $"draws:{year?.ToString() ?? "all"}:{category?.Trim().ToLowerInvariant() ?? "all"}";
+
+        return GetOrFetchAsync<IReadOnlyList<ExpressEntryDraw>>(cacheKey,
+            () => FetchDrawsAsync(year, category, cancellationToken));
+    }
+
+    public Task<ExpressEntryDraw?> GetLatestDrawAsync(CancellationToken cancellationToken = default)
+    {
+        return GetOrFetchAsync<ExpressEntryDraw?>("draws:latest",
+            () => FetchLatestDrawAsync(cancellationToken));
+    }
+
+    public Task<PoolDistribution?> GetPoolDistributionAsync(CancellationToken cancellationToken = default)
+    {
+        return GetOrFetchAsync<PoolDistribution?>("draws:pool",
+            () => FetchPoolDistributionAsync(cancellationToken));
+    }
+
+    private async Task<T> GetOrFetchAsync<T>(string cacheKey, Func<Task<T>> fetch)
+    {
+        if (_cacheDuration <= TimeSpan.Zero)
+        {
+            return await fetch();
+        }
+
+        if (_cache.TryGetValue(cacheKey, out T? cached) && cached is not null)
+        {
+            return cached;
+        }
+
+        var value = await fetch();
+        _cache.Set(cacheKey, value, _cacheDuration);
+        return value;
+    }
+
+    private async Task<IReadOnlyList<ExpressEntryDraw>> FetchDrawsAsync(
+        int? year,
+        string? category,
+        CancellationToken cancellationToken)
     {
         var query = new List<string>();
         if (year.HasValue) query.Add($"year={year.Value}");
@@ -38,7 +90,7 @@ public class ExpressEntryDrawService : IExpressEntryDrawService
         }
     }
 
-    public async Task<ExpressEntryDraw?> GetLatestDrawAsync(CancellationToken cancellationToken = default)
+    private async Task<ExpressEntryDraw?> FetchLatestDrawAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -52,7 +104,7 @@ public class ExpressEntryDrawService : IExpressEntryDrawService
         }
     }
 
-    public async Task<PoolDistribution?> GetPoolDistributionAsync(CancellationToken cancellationToken = default)
+    private async Task<PoolDistribution?> FetchPoolDistributionAsync(CancellationToken cancellationToken)
     {
         try
         {
