@@ -1,5 +1,7 @@
 # Canada Immigration Tracker
 
+[![CI](https://github.com/Dutra3/canada-immigration/actions/workflows/ci.yml/badge.svg)](https://github.com/Dutra3/canada-immigration/actions/workflows/ci.yml)
+
 Sistema web sem login para consultar dados públicos de imigração canadense (Express Entry) e receber alertas por e-mail quando uma nova chamada (draw) for publicada, feito como projeto pessoal de estudo e portfólio.
 
 ## O que o projeto faz
@@ -22,6 +24,7 @@ Os dados de Express Entry e Pool vêm de uma **API pública community-driven** (
 | Frontend   | Angular (standalone components) | Angular 22 |
 | Testes backend | xUnit (sem libs de mock de terceiros — fakes escritos à mão) | — |
 | Testes frontend | Vitest (via `@angular/build:unit-test`) | — |
+| CI | GitHub Actions (testes de backend + testes e build do frontend em `.github/workflows/ci.yml`) | — |
 | Node.js (frontend) | ver `canada-immigration-web/.nvmrc` | 22.23.2 |
 
 > Nota: o backend está fixado em **.NET 8 deliberadamente**, mesmo em máquinas com versões mais novas instaladas.
