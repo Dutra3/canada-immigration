@@ -9,10 +9,12 @@ namespace CanadaImmigration.Api.Controllers;
 public class CrsScoreController : ControllerBase
 {
     private readonly ICrsScoreService _crsScoreService;
+    private readonly IInvitationService _invitationService;
 
-    public CrsScoreController(ICrsScoreService crsScoreService)
+    public CrsScoreController(ICrsScoreService crsScoreService, IInvitationService invitationService)
     {
         _crsScoreService = crsScoreService;
+        _invitationService = invitationService;
     }
 
     [HttpPost]
@@ -28,6 +30,25 @@ public class CrsScoreController : ControllerBase
         }
 
         return Ok(_crsScoreService.Calculate(request));
+    }
+
+    [HttpGet("invitation")]
+    public async Task<ActionResult<InvitationAnalysis>> Invitation(
+        [FromQuery] int score,
+        [FromQuery] int canadianWorkYears,
+        [FromQuery] bool hasFrenchProficiency,
+        [FromQuery] bool hasProvincialNomination,
+        CancellationToken cancellationToken)
+    {
+        if (score < 0 || score > 1200 || canadianWorkYears < 0)
+        {
+            return BadRequest("Score deve estar entre 0 e 1200 e experiência não pode ser negativa.");
+        }
+
+        var analysis = await _invitationService.AnalyzeAsync(
+            score, canadianWorkYears, hasFrenchProficiency, hasProvincialNomination, cancellationToken);
+
+        return Ok(analysis);
     }
 
     private static bool HasNegativeAbility(LanguageAbilities? language)

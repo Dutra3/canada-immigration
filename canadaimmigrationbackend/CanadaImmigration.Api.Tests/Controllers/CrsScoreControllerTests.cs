@@ -1,6 +1,7 @@
 using CanadaImmigration.Api.Controllers;
 using CanadaImmigration.Api.Models;
 using CanadaImmigration.Api.Services;
+using CanadaImmigration.Api.Tests.TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
@@ -8,7 +9,9 @@ namespace CanadaImmigration.Api.Tests.Controllers;
 
 public class CrsScoreControllerTests
 {
-    private readonly CrsScoreController _sut = new(new CrsScoreService());
+    private readonly CrsScoreController _sut = new(
+        new CrsScoreService(),
+        new InvitationService(new FakeExpressEntryDrawService()));
 
     private static CrsScoreRequest ValidRequest() => new()
     {
@@ -61,6 +64,34 @@ public class CrsScoreControllerTests
         request.ForeignWorkYears = -2;
 
         var actionResult = _sut.Calculate(request);
+
+        Assert.IsType<BadRequestObjectResult>(actionResult.Result);
+    }
+
+    [Fact]
+    public async Task Invitation_ValidScore_ReturnsOkWithAnalysis()
+    {
+        var actionResult = await _sut.Invitation(489, 1, false, false, CancellationToken.None);
+
+        var ok = Assert.IsType<OkObjectResult>(actionResult.Result);
+        var analysis = Assert.IsType<InvitationAnalysis>(ok.Value);
+        Assert.Equal(489, analysis.Score);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(1201)]
+    public async Task Invitation_InvalidScore_ReturnsBadRequest(int score)
+    {
+        var actionResult = await _sut.Invitation(score, 0, false, false, CancellationToken.None);
+
+        Assert.IsType<BadRequestObjectResult>(actionResult.Result);
+    }
+
+    [Fact]
+    public async Task Invitation_NegativeWorkYears_ReturnsBadRequest()
+    {
+        var actionResult = await _sut.Invitation(400, -1, false, false, CancellationToken.None);
 
         Assert.IsType<BadRequestObjectResult>(actionResult.Result);
     }

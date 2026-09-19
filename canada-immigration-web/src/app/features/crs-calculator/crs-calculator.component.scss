@@ -154,3 +154,68 @@
 .error {
   color: #e24b4a;
 }
+
+.invitation {
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-top: 0;
+    color: var(--text-primary);
+  }
+}
+
+.invitation-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: -0.5rem;
+}
+
+.pool-position {
+  font-size: 14px;
+  color: var(--text-primary);
+  padding: 0.6rem 0.75rem;
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.verdict {
+  font-weight: 500;
+  font-size: 13px;
+
+  &.invited {
+    color: #3fb96c;
+  }
+
+  &.not-invited {
+    color: #e24b4a;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 0.5px solid var(--border-color);
+  color: var(--text-secondary);
+
+  &.badge-eligible {
+    color: #3fb96c;
+    border-color: #3fb96c;
+  }
+
+  &.badge-unknown {
+    color: var(--text-secondary);
+  }
+
+  &.badge-not {
+    color: #e24b4a;
+    border-color: #e24b4a;
+  }
+}

@@ -53,3 +53,28 @@ export interface CrsScoreResult {
   totalScore: number;
   breakdown: CrsBreakdown;
 }
+
+export type CategoryEligibility = 'Eligible' | 'NotEligible' | 'Unknown';
+
+export interface CategoryInvitation {
+  category: string;
+  latestDrawNumber: number;
+  latestDrawDate: string;
+  latestCutoff: number;
+  wouldBeInvited: boolean;
+  eligibility: CategoryEligibility;
+}
+
+export interface PoolPosition {
+  range: string;
+  candidatesInRange: number;
+  candidatesBelow: number;
+  totalCandidates: number;
+  percentBelow: number;
+}
+
+export interface InvitationAnalysis {
+  score: number;
+  categories: CategoryInvitation[];
+  pool?: PoolPosition;
+}

@@ -24,6 +24,7 @@ builder.Services.AddHttpClient<IExpressEntryDrawService, ExpressEntryDrawService
 
 builder.Services.AddScoped<IProofOfFundsService, ProofOfFundsService>();
 builder.Services.AddScoped<ICrsScoreService, CrsScoreService>();
+builder.Services.AddScoped<IInvitationService, InvitationService>();
 
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? "Data Source=canadaimmigration.db";

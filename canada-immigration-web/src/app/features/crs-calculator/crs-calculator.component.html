@@ -197,4 +197,51 @@
       </table>
     </div>
   }
+
+  @if (invitation(); as inv) {
+    <div class="result invitation">
+      <h2>Você seria convidado?</h2>
+      <p class="invitation-subtitle">Sua nota comparada ao corte do draw mais recente de cada categoria.</p>
+
+      @if (inv.pool; as pool) {
+        <p class="pool-position">
+          No pool atual, sua nota cai na faixa <strong>{{ pool.range }}</strong> —
+          acima de aproximadamente <strong>{{ pool.percentBelow }}%</strong> dos candidatos
+          ({{ pool.totalCandidates | number }} no total).
+        </p>
+      }
+
+      <table class="breakdown invitation-table">
+        <thead>
+          <tr>
+            <th>Categoria</th>
+            <th>Último corte</th>
+            <th>Resultado</th>
+            <th>Elegibilidade</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cat of sortedCategories(); track cat.category + cat.latestDrawNumber) {
+            <tr>
+              <td>{{ cat.category | categoryLabel }}</td>
+              <td>{{ cat.latestCutoff }} <span class="muted">(draw #{{ cat.latestDrawNumber }})</span></td>
+              <td>
+                <span class="verdict" [class.invited]="cat.wouldBeInvited" [class.not-invited]="!cat.wouldBeInvited">
+                  {{ cat.wouldBeInvited ? 'Convidado' : 'Não convidado' }}
+                </span>
+              </td>
+              <td>
+                <span class="badge"
+                  [class.badge-eligible]="cat.eligibility === 'Eligible'"
+                  [class.badge-unknown]="cat.eligibility === 'Unknown'"
+                  [class.badge-not]="cat.eligibility === 'NotEligible'">
+                  {{ cat.eligibility === 'Eligible' ? 'Elegível' : cat.eligibility === 'Unknown' ? 'Depende da ocupação' : 'Não elegível' }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </div>

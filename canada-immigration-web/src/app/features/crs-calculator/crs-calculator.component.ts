@@ -1,12 +1,15 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CrsScoreService } from '../../core/services/crs-score.service';
+import { CategoryLabelPipe } from '../../core/pipes/category-label.pipe';
 import {
   CanadianEducationLevel,
+  CategoryInvitation,
   CrsScoreRequest,
   CrsScoreResult,
   EducationLevel,
+  InvitationAnalysis,
   LanguageAbilities
 } from '../../models/crs-score.model';
 
@@ -18,7 +21,7 @@ interface SelectOption<T> {
 @Component({
   selector: 'app-crs-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CategoryLabelPipe],
   templateUrl: './crs-calculator.component.html',
   styleUrl: './crs-calculator.component.scss'
 })
@@ -88,8 +91,18 @@ export class CrsCalculatorComponent {
   spouseCanadianWorkYears = signal<number>(0);
 
   result = signal<CrsScoreResult | null>(null);
+  invitation = signal<InvitationAnalysis | null>(null);
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
+
+  sortedCategories = computed<CategoryInvitation[]>(() => {
+    const analysis = this.invitation();
+    if (!analysis) {
+      return [];
+    }
+    const order: Record<string, number> = { Eligible: 0, Unknown: 1, NotEligible: 2 };
+    return [...analysis.categories].sort((a, b) => order[a.eligibility] - order[b.eligibility]);
+  });
 
   constructor(private crsScoreService: CrsScoreService) {}
 
@@ -116,6 +129,7 @@ export class CrsCalculatorComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
     this.result.set(null);
+    this.invitation.set(null);
 
     const request: CrsScoreRequest = {
       age: this.age(),
@@ -142,6 +156,7 @@ export class CrsCalculatorComponent {
       next: (res) => {
         this.result.set(res);
         this.isLoading.set(false);
+        this.loadInvitation(res.totalScore);
       },
       error: (err) => {
         console.error('Erro ao calcular CRS', err);
@@ -149,5 +164,35 @@ export class CrsCalculatorComponent {
         this.isLoading.set(false);
       }
     });
+  }
+
+  // Francês conta como proficiency quando TODAS as habilidades do teste de
+  // francês estão em NCLC/CLB 7+ — seja ele a primeira ou a segunda língua.
+  private hasFrenchProficiency(): boolean {
+    const french = this.firstLanguageIsFrench()
+      ? this.firstLanguage()
+      : this.hasSecondLanguage() ? this.secondLanguage() : null;
+
+    return french !== null
+      && french.listening >= 7
+      && french.reading >= 7
+      && french.writing >= 7
+      && french.speaking >= 7;
+  }
+
+  private loadInvitation(score: number): void {
+    this.crsScoreService
+      .analyzeInvitation(
+        score,
+        this.canadianWorkYears(),
+        this.hasFrenchProficiency(),
+        this.hasProvincialNomination()
+      )
+      .subscribe({
+        next: (analysis) => this.invitation.set(analysis),
+        error: (err) => {
+          console.error('Erro ao comparar nota com draws', err);
+        }
+      });
   }
 }

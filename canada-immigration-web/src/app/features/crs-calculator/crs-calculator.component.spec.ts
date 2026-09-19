@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { CrsCalculatorComponent } from './crs-calculator.component';
 import { CrsScoreService } from '../../core/services/crs-score.service';
-import { CrsScoreRequest, CrsScoreResult } from '../../models/crs-score.model';
+import { CrsScoreRequest, CrsScoreResult, InvitationAnalysis } from '../../models/crs-score.model';
 
 describe('CrsCalculatorComponent', () => {
   const mockResult: CrsScoreResult = {
@@ -19,10 +19,35 @@ describe('CrsCalculatorComponent', () => {
     }
   };
 
-  async function setup(fakeService: Partial<CrsScoreService>) {
+  const mockAnalysis: InvitationAnalysis = {
+    score: 489,
+    categories: [
+      { category: '', latestDrawNumber: 11, latestDrawDate: '2025-07-01', latestCutoff: 500, wouldBeInvited: false, eligibility: 'Eligible' },
+      { category: 'French', latestDrawNumber: 30, latestDrawDate: '2025-06-20', latestCutoff: 430, wouldBeInvited: true, eligibility: 'Eligible' },
+      { category: 'STEM', latestDrawNumber: 50, latestDrawDate: '2025-04-01', latestCutoff: 480, wouldBeInvited: true, eligibility: 'Unknown' },
+      { category: 'PNP', latestDrawNumber: 40, latestDrawDate: '2025-06-25', latestCutoff: 720, wouldBeInvited: false, eligibility: 'NotEligible' }
+    ],
+    pool: {
+      range: '451-500',
+      candidatesInRange: 500,
+      candidatesBelow: 1000,
+      totalCandidates: 2000,
+      percentBelow: 50
+    }
+  };
+
+  function fakeService(overrides: Partial<CrsScoreService> = {}): Partial<CrsScoreService> {
+    return {
+      calculate: () => of(mockResult),
+      analyzeInvitation: () => of(mockAnalysis),
+      ...overrides
+    };
+  }
+
+  async function setup(service: Partial<CrsScoreService> = {}) {
     await TestBed.configureTestingModule({
       imports: [CrsCalculatorComponent],
-      providers: [{ provide: CrsScoreService, useValue: fakeService }]
+      providers: [{ provide: CrsScoreService, useValue: fakeService(service) }]
     }).compileComponents();
 
     return TestBed.createComponent(CrsCalculatorComponent);
@@ -115,5 +140,82 @@ describe('CrsCalculatorComponent', () => {
     expect(component.result()).toBeNull();
     expect(component.isLoading()).toBe(false);
     expect(component.errorMessage()).toBe('Não foi possível calcular. Tente novamente.');
+  });
+
+  describe('análise de convite', () => {
+    it('deve chamar analyzeInvitation com a nota e os sinais do formulário', async () => {
+      const analyzeSpy = vi.fn().mockReturnValue(of(mockAnalysis));
+      const fixture = await setup({ analyzeInvitation: analyzeSpy });
+      const component = fixture.componentInstance;
+
+      component.canadianWorkYears.set(2);
+      component.hasProvincialNomination.set(true);
+      component.calculate();
+
+      expect(analyzeSpy).toHaveBeenCalledWith(489, 2, false, true);
+      expect(component.invitation()).toEqual(mockAnalysis);
+    });
+
+    it('deve derivar proficiência em francês da primeira língua quando firstLanguageIsFrench', async () => {
+      const analyzeSpy = vi.fn().mockReturnValue(of(mockAnalysis));
+      const fixture = await setup({ analyzeInvitation: analyzeSpy });
+      const component = fixture.componentInstance;
+
+      component.firstLanguageIsFrench.set(true);
+      component.updateAbility('first', 'listening', 9);
+      component.calculate();
+
+      expect(analyzeSpy).toHaveBeenCalledWith(489, 0, true, false);
+    });
+
+    it('deve derivar proficiência em francês da segunda língua quando primeira é inglês', async () => {
+      const analyzeSpy = vi.fn().mockReturnValue(of(mockAnalysis));
+      const fixture = await setup({ analyzeInvitation: analyzeSpy });
+      const component = fixture.componentInstance;
+
+      component.hasSecondLanguage.set(true); // padrão CLB 7 em tudo
+      component.calculate();
+
+      expect(analyzeSpy).toHaveBeenCalledWith(489, 0, true, false);
+    });
+
+    it('deve renderizar posição no pool e vereditos por categoria', async () => {
+      const fixture = await setup();
+      fixture.componentInstance.calculate();
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const invitation = compiled.querySelector('.invitation');
+
+      expect(invitation?.textContent).toContain('Você seria convidado?');
+      expect(invitation?.textContent).toContain('451-500');
+      expect(invitation?.textContent).toContain('50%');
+      expect(invitation?.textContent).toContain('Convidado');
+      expect(invitation?.textContent).toContain('Depende da ocupação');
+    });
+
+    it('deve ordenar categorias: elegíveis, depois unknown, depois não elegíveis', async () => {
+      const fixture = await setup();
+      const component = fixture.componentInstance;
+
+      component.calculate();
+
+      const order = component.sortedCategories().map(c => c.eligibility);
+      expect(order).toEqual(['Eligible', 'Eligible', 'Unknown', 'NotEligible']);
+    });
+
+    it('não deve quebrar quando a análise falha — nota continua visível', async () => {
+      const fixture = await setup({ analyzeInvitation: () => throwError(() => new Error('falha')) });
+      const component = fixture.componentInstance;
+
+      component.calculate();
+      fixture.detectChanges();
+
+      expect(component.result()).toEqual(mockResult);
+      expect(component.invitation()).toBeNull();
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.querySelector('.score')?.textContent).toContain('489');
+      expect(compiled.querySelector('.invitation')).toBeNull();
+    });
   });
 });
