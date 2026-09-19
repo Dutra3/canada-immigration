@@ -4,6 +4,7 @@ import { ProofOfFundsComponent } from './features/proof-of-funds/proof-of-funds.
 import { PoolChartComponent } from './features/pools/pool-chart/pool-chart.component';
 import { SubscribeComponent } from './features/subscribe/subscribe.component';
 import { CrsTrendComponent } from './features/trends/crs-trend/crs-trend.component';
+import { CrsCalculatorComponent } from './features/crs-calculator/crs-calculator.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'draws', pathMatch: 'full' },
@@ -11,5 +12,6 @@ export const routes: Routes = [
   { path: 'proof-of-funds', component: ProofOfFundsComponent },
   { path: 'pool', component: PoolChartComponent },
   { path: 'trends', component: CrsTrendComponent },
+  { path: 'crs-calculator', component: CrsCalculatorComponent },
   { path: 'subscribe', component: SubscribeComponent },
 ];

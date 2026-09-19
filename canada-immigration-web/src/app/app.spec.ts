@@ -22,11 +22,12 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     const links = compiled.querySelectorAll('nav.tabs a');
-    expect(links.length).toBe(5);
+    expect(links.length).toBe(6);
     expect(links[0].textContent).toContain('Express Entry Draws');
     expect(links[1].textContent).toContain('Proof of Funds');
     expect(links[2].textContent).toContain('Pool CRS');
     expect(links[3].textContent).toContain('Tendência CRS');
-    expect(links[4].textContent).toContain('Receber E-mail');
+    expect(links[4].textContent).toContain('Calculadora CRS');
+    expect(links[5].textContent).toContain('Receber E-mail');
   });
 });

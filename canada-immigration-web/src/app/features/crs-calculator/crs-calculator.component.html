@@ -1,0 +1,200 @@
+<div class="crs-container">
+  <h1>Calculadora CRS — Express Entry</h1>
+  <p>Preencha seus dados para calcular a nota no Comprehensive Ranking System, com base nas tabelas oficiais do IRCC.</p>
+
+  <div class="notice">
+    <strong>Atenção:</strong> esta é apenas uma <strong>simulação</strong>. Sua nota real só é confirmada ao criar um perfil no Express Entry.
+    Calcular aqui <strong>não cria nenhum cadastro</strong> no sistema oficial.
+  </div>
+
+  <div class="form-section">
+    <h2>Dados principais</h2>
+
+    <div class="form-group">
+      <label for="age">Idade</label>
+      <input id="age" type="number" min="0" [ngModel]="age()" (ngModelChange)="age.set($event)" />
+    </div>
+
+    <div class="form-group">
+      <label for="education">Nível de educação</label>
+      <select id="education" [ngModel]="education()" (ngModelChange)="education.set($event)">
+        @for (opt of educationOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="canadianWork">Experiência de trabalho no Canadá</label>
+      <select id="canadianWork" [ngModel]="canadianWorkYears()" (ngModelChange)="canadianWorkYears.set($event)">
+        @for (opt of workYearOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="foreignWork">Experiência de trabalho no exterior</label>
+      <select id="foreignWork" [ngModel]="foreignWorkYears()" (ngModelChange)="foreignWorkYears.set($event)">
+        @for (opt of workYearOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>Primeira língua oficial (CLB/NCLC por habilidade)</h2>
+
+    <div class="checkbox-group">
+      <label>
+        <input type="checkbox" [ngModel]="firstLanguageIsFrench()" (ngModelChange)="firstLanguageIsFrench.set($event)" />
+        Minha primeira língua oficial é francês (NCLC)
+      </label>
+    </div>
+
+    <div class="abilities-grid">
+      @for (ability of abilities; track ability) {
+        <div class="form-group">
+          <label>{{ abilityLabels[ability] }}</label>
+          <select [ngModel]="firstLanguage()[ability]" (ngModelChange)="updateAbility('first', ability, $event)">
+            @for (opt of clbOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>Segunda língua oficial (opcional)</h2>
+
+    <div class="checkbox-group">
+      <label>
+        <input type="checkbox" [ngModel]="hasSecondLanguage()" (ngModelChange)="hasSecondLanguage.set($event)" />
+        Tenho resultado de teste da segunda língua oficial
+      </label>
+    </div>
+
+    @if (hasSecondLanguage()) {
+      <div class="abilities-grid">
+        @for (ability of abilities; track ability) {
+          <div class="form-group">
+            <label>{{ abilityLabels[ability] }}</label>
+            <select [ngModel]="secondLanguage()[ability]" (ngModelChange)="updateAbility('second', ability, $event)">
+              @for (opt of clbOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="form-section">
+    <h2>Pontos adicionais</h2>
+
+    <div class="form-group">
+      <label for="canadianEducation">Educação no Canadá</label>
+      <select id="canadianEducation" [ngModel]="canadianEducation()" (ngModelChange)="canadianEducation.set($event)">
+        @for (opt of canadianEducationOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="checkbox-group">
+      <label>
+        <input type="checkbox" [ngModel]="hasProvincialNomination()" (ngModelChange)="hasProvincialNomination.set($event)" />
+        Tenho nomeação provincial (PNP)
+      </label>
+      <label>
+        <input type="checkbox" [ngModel]="hasSiblingInCanada()" (ngModelChange)="hasSiblingInCanada.set($event)" />
+        Tenho irmão/irmã cidadão ou residente permanente no Canadá
+      </label>
+      <label>
+        <input type="checkbox" [ngModel]="hasCertificateOfQualification()" (ngModelChange)="hasCertificateOfQualification.set($event)" />
+        Tenho certificado de qualificação em ofício (trade)
+      </label>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>Cônjuge ou companheiro(a)</h2>
+
+    <div class="checkbox-group">
+      <label>
+        <input type="checkbox" [ngModel]="hasSpouse()" (ngModelChange)="hasSpouse.set($event)" />
+        Meu cônjuge/companheiro(a) vai imigrar comigo
+      </label>
+    </div>
+
+    @if (hasSpouse()) {
+      <div class="form-group">
+        <label for="spouseEducation">Nível de educação do cônjuge</label>
+        <select id="spouseEducation" [ngModel]="spouseEducation()" (ngModelChange)="spouseEducation.set($event)">
+          @for (opt of educationOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="spouseCanadianWork">Experiência de trabalho do cônjuge no Canadá</label>
+        <select id="spouseCanadianWork" [ngModel]="spouseCanadianWorkYears()" (ngModelChange)="spouseCanadianWorkYears.set($event)">
+          @for (opt of workYearOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="abilities-grid">
+        @for (ability of abilities; track ability) {
+          <div class="form-group">
+            <label>{{ abilityLabels[ability] }} (CLB)</label>
+            <select [ngModel]="spouseFirstLanguage()[ability]" (ngModelChange)="updateAbility('spouse', ability, $event)">
+              @for (opt of clbOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <button class="calculate-btn" (click)="calculate()" [disabled]="isLoading()">Calcular nota CRS</button>
+
+  @if (isLoading()) {
+    <p>Calculando...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (result(); as res) {
+    <div class="result">
+      <p class="score-label">Sua nota CRS estimada</p>
+      <p class="score">{{ res.totalScore }}</p>
+
+      <table class="breakdown">
+        <thead>
+          <tr><th>Fator</th><th>Pontos</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Idade</td><td>{{ res.breakdown.age }}</td></tr>
+          <tr><td>Educação</td><td>{{ res.breakdown.education }}</td></tr>
+          <tr><td>Primeira língua oficial</td><td>{{ res.breakdown.firstLanguage }}</td></tr>
+          <tr><td>Segunda língua oficial</td><td>{{ res.breakdown.secondLanguage }}</td></tr>
+          <tr><td>Experiência canadense</td><td>{{ res.breakdown.canadianWorkExperience }}</td></tr>
+          <tr><td>Fatores do cônjuge</td><td>{{ res.breakdown.spouseFactors }}</td></tr>
+          <tr><td>Transferibilidade de habilidades</td><td>{{ res.breakdown.skillTransferability }}</td></tr>
+          <tr><td>Pontos adicionais</td><td>{{ res.breakdown.additional }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

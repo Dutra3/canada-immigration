@@ -1,0 +1,156 @@
+.crs-container {
+  padding: 2rem;
+  max-width: 900px;
+  color: var(--text-primary);
+}
+
+.notice {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--bg-card-alt);
+  border: 0.5px solid var(--border-color);
+  border-left: 3px solid var(--accent-text);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.form-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-color);
+  border-radius: 12px;
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 0;
+    color: var(--text-primary);
+  }
+}
+
+.form-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 0.75rem 0;
+
+  label {
+    color: var(--text-secondary);
+    font-size: 14px;
+    min-width: 220px;
+  }
+
+  input[type='number'],
+  select {
+    padding: 0.5rem;
+    background: var(--bg-card-alt);
+    border: 0.5px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+  }
+
+  input[type='number'] {
+    width: 100px;
+  }
+}
+
+.abilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.5rem 1rem;
+
+  .form-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+
+    label {
+      min-width: 0;
+    }
+
+    select {
+      width: 100%;
+    }
+  }
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+
+  label {
+    color: var(--text-secondary);
+    font-size: 14px;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+.calculate-btn {
+  padding: 0.6rem 1.25rem;
+  cursor: pointer;
+  background: transparent;
+  border: 0.5px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 6px;
+  font-size: 15px;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.result {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-card-alt);
+  border: 0.5px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.score-label {
+  margin-bottom: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.score {
+  margin-top: 0.25rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--accent-text);
+}
+
+.breakdown {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.4rem 0.5rem;
+    font-size: 14px;
+    border-bottom: 0.5px solid var(--border-color);
+  }
+
+  th {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  td:last-child,
+  th:last-child {
+    text-align: right;
+  }
+}
+
+.error {
+  color: #e24b4a;
+}
