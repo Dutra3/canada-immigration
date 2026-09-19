@@ -1,6 +1,7 @@
 using CanadaImmigration.Api.Models;
 using CanadaImmigration.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CanadaImmigration.Api.Controllers;
 
@@ -16,6 +17,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPost]
+    [EnableRateLimiting("subscribe")]
     public async Task<IActionResult> Subscribe([FromBody] SubscriptionRequest request, CancellationToken cancellationToken)
     {
         var result = await _subscriberService.SubscribeAsync(request.Email, request.Categories, cancellationToken);

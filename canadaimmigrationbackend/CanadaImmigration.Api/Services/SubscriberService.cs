@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using CanadaImmigration.Api.Data;
 using CanadaImmigration.Api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ public class SubscriberService : ISubscriberService
     {
         email = email?.Trim().ToLowerInvariant() ?? string.Empty;
 
-        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+        if (!IsValidEmail(email))
         {
             return SubscribeResult.InvalidEmail;
         }
@@ -74,6 +75,24 @@ public class SubscriberService : ISubscriberService
             .Include(s => s.Categories)
             .Where(s => s.Categories.Any(c => c.Category == category || c.Category == Subscriber.AllCategoriesValue))
             .ToListAsync(cancellationToken);
+    }
+
+    private static bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return false;
+        }
+
+        try
+        {
+            var address = new MailAddress(email);
+            return address.Address == email;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 
     private static List<string> NormalizeCategories(IReadOnlyList<string>? categories)

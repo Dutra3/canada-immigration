@@ -1,3 +1,4 @@
+using System.Threading.RateLimiting;
 using CanadaImmigration.Api.Data;
 using CanadaImmigration.Api.Services;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,25 @@ builder.Services.AddCors(options =>
 // Credenciais de SMTP nunca ficam no código: vêm de appsettings.json (Development)
 // ou de variáveis de ambiente / user-secrets em produção. Ver seção "Email" no appsettings.
 builder.Services.Configure<EmailNotifierConfig>(builder.Configuration.GetSection("Email"));
+
+// Rate limit por IP no endpoint de inscrição (proteção contra spam de cadastros).
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    var permitLimit = builder.Configuration.GetValue<int?>("RateLimiting:SubscribePermitLimit") ?? 5;
+    var windowMinutes = builder.Configuration.GetValue<int?>("RateLimiting:SubscribeWindowMinutes") ?? 1;
+
+    options.AddPolicy("subscribe", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = permitLimit,
+                Window = TimeSpan.FromMinutes(windowMinutes),
+                QueueLimit = 0
+            }));
+});
 builder.Services.AddSingleton<EmailNotifier>();
 builder.Services.AddHostedService<ExpressEntryPollingService>();
 
@@ -64,6 +84,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(AngularDevCorsPolicy);
+
+app.UseRateLimiter();
 
 app.UseAuthorization();
 

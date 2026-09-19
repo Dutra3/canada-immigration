@@ -30,13 +30,21 @@ public class SubscriberServiceTests
         Assert.Equal(2, subscriber.Categories.Count);
     }
 
-    [Fact]
-    public async Task SubscribeAsync_WithInvalidEmail_ReturnsInvalidEmail()
+    [Theory]
+    [InlineData("not-an-email")]
+    [InlineData("missing-at-sign.com")]
+    [InlineData("user@")]
+    [InlineData("@example.com")]
+    [InlineData("two@@example.com")]
+    [InlineData("spaces in@example.com")]
+    [InlineData("Nome <user@example.com>")]
+    [InlineData("")]
+    public async Task SubscribeAsync_WithInvalidEmail_ReturnsInvalidEmail(string email)
     {
         using var db = CreateDbContext();
         var sut = new SubscriberService(db);
 
-        var result = await sut.SubscribeAsync("not-an-email", new List<string> { "CEC" });
+        var result = await sut.SubscribeAsync(email, new List<string> { "CEC" });
 
         Assert.Equal(SubscribeResult.InvalidEmail, result);
         Assert.Empty(db.Subscribers);

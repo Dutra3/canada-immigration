@@ -69,6 +69,8 @@ dotnet user-secrets set "Email:SenderPassword" "sua-app-password"
 
 Sem SMTP configurado, o resto do sistema funciona normalmente (draws, pool, proof of funds e até o cadastro de inscrições) — apenas os e-mails não são enviados, e o erro é registrado nos logs do backend.
 
+O endpoint `POST /api/Subscriptions` tem **rate limit de 5 requisições por minuto por IP** (retorna HTTP 429 acima disso), como proteção contra spam de cadastros — configurável via `RateLimiting:SubscribePermitLimit` e `RateLimiting:SubscribeWindowMinutes` no `appsettings.json`.
+
 ## Como rodar o frontend
 
 Pré-requisito: **Node.js 22.23.2+** (recomendado usar `nvm`, o repositório já tem um `.nvmrc`).
