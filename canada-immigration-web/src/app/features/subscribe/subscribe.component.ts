@@ -45,8 +45,6 @@ export class SubscribeComponent implements OnInit {
     const select = event.target as HTMLSelectElement;
     const selected = Array.from(select.selectedOptions).map((option) => option.value);
 
-    // Se o usuário marcou "Todas/Qualquer", as outras seleções ficam redundantes,
-    // então limpamos o select visualmente para refletir só a escolha "ALL".
     if (selected.includes(this.allCategoriesValue) && selected.length > 1) {
       Array.from(select.options).forEach((option) => {
         option.selected = option.value === this.allCategoriesValue;

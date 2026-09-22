@@ -166,8 +166,6 @@ export class CrsCalculatorComponent {
     });
   }
 
-  // Francês conta como proficiency quando TODAS as habilidades do teste de
-  // francês estão em NCLC/CLB 7+ — seja ele a primeira ou a segunda língua.
   private hasFrenchProficiency(): boolean {
     const french = this.firstLanguageIsFrench()
       ? this.firstLanguage()

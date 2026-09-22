@@ -36,7 +36,6 @@ public class CrsScoreServiceTests
 
         var result = _sut.Calculate(request);
 
-        // age 105 + edu 120 + lang 4x31 + ca 40 + transferability 113 (capped 100)
         Assert.Equal(105, result.Breakdown.Age);
         Assert.Equal(120, result.Breakdown.Education);
         Assert.Equal(124, result.Breakdown.FirstLanguage);
@@ -62,9 +61,9 @@ public class CrsScoreServiceTests
 
         Assert.Equal(95, result.Breakdown.Age);
         Assert.Equal(112, result.Breakdown.Education);
-        Assert.Equal(116, result.Breakdown.FirstLanguage); // 4 x 29
+        Assert.Equal(116, result.Breakdown.FirstLanguage);
         Assert.Equal(35, result.Breakdown.CanadianWorkExperience);
-        Assert.Equal(33, result.Breakdown.SpouseFactors); // edu 8 + lang 4x5 + work 5
+        Assert.Equal(33, result.Breakdown.SpouseFactors);
         Assert.Equal(100, result.Breakdown.SkillTransferability);
         Assert.Equal(491, result.TotalScore);
     }
@@ -73,7 +72,7 @@ public class CrsScoreServiceTests
     public void Calculate_SecondLanguage_IsCappedAt24WithoutSpouse()
     {
         var request = BaseRequest();
-        request.SecondLanguage = Abilities(9); // 4 x 6 = 24
+        request.SecondLanguage = Abilities(9);
 
         var result = _sut.Calculate(request);
 
@@ -110,20 +109,19 @@ public class CrsScoreServiceTests
     public void Calculate_SkillTransferability_RequiresClb7ForEducationCombo()
     {
         var request = BaseRequest();
-        request.FirstLanguage = Abilities(6); // abaixo de CLB 7
+        request.FirstLanguage = Abilities(6);
         request.CanadianWorkYears = 2;
         request.ForeignWorkYears = 3;
 
         var result = _sut.Calculate(request);
 
-        // só combos por experiência contam (sem língua CLB7+)
-        Assert.Equal(75, result.Breakdown.SkillTransferability); // edu×ca 25 + foreign×ca 50
+        Assert.Equal(75, result.Breakdown.SkillTransferability);
     }
 
     [Theory]
-    [InlineData(4, 0)]   // sem francês forte
+    [InlineData(4, 0)]
     [InlineData(6, 0)]
-    [InlineData(7, 50)]  // NCLC7+ francês + inglês CLB5+
+    [InlineData(7, 50)]
     [InlineData(9, 50)]
     public void Calculate_FrenchBonus_WhenFirstIsEnglishAndSecondIsFrench(int secondClb, int expectedBonus)
     {
@@ -139,7 +137,7 @@ public class CrsScoreServiceTests
     public void Calculate_FrenchBonus_WithoutEnglishTest_Gives25()
     {
         var request = BaseRequest();
-        request.FirstLanguageIsFrench = true; // francês NCLC9 como primeira língua, sem segunda
+        request.FirstLanguageIsFrench = true;
 
         var result = _sut.Calculate(request);
 
@@ -156,7 +154,7 @@ public class CrsScoreServiceTests
 
         var result = _sut.Calculate(request);
 
-        Assert.Equal(645, result.Breakdown.Additional); // 15 + 600 + 30
+        Assert.Equal(645, result.Breakdown.Additional);
     }
 
     [Theory]
@@ -171,7 +169,6 @@ public class CrsScoreServiceTests
     {
         var request = BaseRequest();
         request.Age = age;
-        // zera o resto para isolar a idade
         request.Education = EducationLevel.LessThanSecondary;
         request.FirstLanguage = Abilities(0);
 
@@ -189,7 +186,7 @@ public class CrsScoreServiceTests
         var result = _sut.Calculate(request);
 
         Assert.Equal(0, result.Breakdown.SpouseFactors);
-        Assert.Equal(95, result.Breakdown.Age); // ainda usa a tabela "com cônjuge"
+        Assert.Equal(95, result.Breakdown.Age);
     }
 
     [Fact]

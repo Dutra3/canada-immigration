@@ -60,11 +60,11 @@ public class InvitationServiceTests
     {
         var result = await _sut.AnalyzeAsync(489, 0, false, false);
 
-        Assert.False(result.Categories.Single(c => c.Category == "").WouldBeInvited);   // 489 < 500
-        Assert.False(result.Categories.Single(c => c.Category == "CEC").WouldBeInvited); // 489 < 521
-        Assert.True(result.Categories.Single(c => c.Category == "French").WouldBeInvited); // 489 >= 430
+        Assert.False(result.Categories.Single(c => c.Category == "").WouldBeInvited);
+        Assert.False(result.Categories.Single(c => c.Category == "CEC").WouldBeInvited);
+        Assert.True(result.Categories.Single(c => c.Category == "French").WouldBeInvited);
         Assert.False(result.Categories.Single(c => c.Category == "PNP").WouldBeInvited);
-        Assert.True(result.Categories.Single(c => c.Category == "STEM").WouldBeInvited); // 489 >= 480
+        Assert.True(result.Categories.Single(c => c.Category == "STEM").WouldBeInvited);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class InvitationServiceTests
         var pool = result.Pool!;
         Assert.Equal("451-500", pool.Range);
         Assert.Equal(500, pool.CandidatesInRange);
-        Assert.Equal(1000, pool.CandidatesBelow); // 100+200+300+400
+        Assert.Equal(1000, pool.CandidatesBelow);
         Assert.Equal(2000, pool.TotalCandidates);
         Assert.Equal(50.0, pool.PercentBelow);
     }
@@ -159,7 +159,7 @@ public class InvitationServiceTests
         };
         _fakeDrawService.PoolToReturn.TotalCandidates = 150;
 
-        var result = await _sut.AnalyzeAsync(400, 0, false, false); // não cai em nenhuma faixa
+        var result = await _sut.AnalyzeAsync(400, 0, false, false);
 
         Assert.Null(result.Pool);
     }

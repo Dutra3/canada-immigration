@@ -173,7 +173,7 @@ describe('CrsCalculatorComponent', () => {
       const fixture = await setup({ analyzeInvitation: analyzeSpy });
       const component = fixture.componentInstance;
 
-      component.hasSecondLanguage.set(true); // padrão CLB 7 em tudo
+      component.hasSecondLanguage.set(true);
       component.calculate();
 
       expect(analyzeSpy).toHaveBeenCalledWith(489, 0, true, false);

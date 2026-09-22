@@ -2,9 +2,6 @@ using CanadaImmigration.Api.Models;
 
 namespace CanadaImmigration.Api.Services;
 
-// Compara a nota CRS do usuário com o corte do draw mais recente de cada
-// categoria e com a distribuição atual do pool. Categorias baseadas em
-// ocupação (NOC) ficam como Unknown — não dá pra inferir elegibilidade.
 public class InvitationService : IInvitationService
 {
     private readonly IExpressEntryDrawService _drawService;

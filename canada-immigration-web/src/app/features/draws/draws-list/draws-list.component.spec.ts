@@ -112,7 +112,7 @@ describe('DrawsListComponent', () => {
 
       const fixture = await setup({
         getDraws: () => of({ ...mockPagedResult, items: [outroDrawDaPagina] }),
-        getLatestDraw: () => of(mockDraw), // #441
+        getLatestDraw: () => of(mockDraw),
       });
       fixture.detectChanges();
 
