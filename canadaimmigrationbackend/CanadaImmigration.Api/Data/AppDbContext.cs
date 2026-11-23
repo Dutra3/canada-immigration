@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Subscriber> Subscribers => Set<Subscriber>();
     public DbSet<SubscriberCategory> SubscriberCategories => Set<SubscriberCategory>();
     public DbSet<DrawCheckState> DrawCheckStates => Set<DrawCheckState>();
+    public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,6 +30,13 @@ public class AppDbContext : DbContext
                 .WithMany(s => s.Categories)
                 .HasForeignKey(sc => sc.SubscriberId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<NotificationLog>(entity =>
+        {
+            entity.HasIndex(n => n.DrawNumber);
+            entity.HasIndex(n => new { n.DrawNumber, n.Email });
+            entity.Property(n => n.Email).IsRequired();
         });
     }
 }

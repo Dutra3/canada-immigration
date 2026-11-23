@@ -100,8 +100,31 @@ public class ExpressEntryPollingService : BackgroundService
 
         foreach (var subscriber in subscribers)
         {
-            await emailNotifier.SendNewDrawNotificationAsync(subscriber.Email, subscriber.UnsubscribeToken, latestDraw, cancellationToken);
+            var logEntry = new NotificationLog
+            {
+                SubscriberId = subscriber.Id,
+                Email = subscriber.Email,
+                DrawNumber = latestDraw.DrawNumber,
+                Category = latestDraw.Category,
+                SentAtUtc = DateTime.UtcNow
+            };
+
+            try
+            {
+                await emailNotifier.SendNewDrawNotificationAsync(subscriber.Email, subscriber.UnsubscribeToken, latestDraw, cancellationToken);
+                logEntry.Success = true;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(ex, "Falha ao enviar notificação do draw #{DrawNumber} para {Email}", latestDraw.DrawNumber, subscriber.Email);
+                logEntry.Success = false;
+                logEntry.ErrorMessage = ex.Message;
+            }
+
+            db.NotificationLogs.Add(logEntry);
         }
+
+        await db.SaveChangesAsync(cancellationToken);
     }
 
     private static TimeZoneInfo ResolveBrasiliaTimeZone()

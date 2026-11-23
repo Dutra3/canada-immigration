@@ -1,8 +1,9 @@
-using System.Net;
-using System.Net.Mail;
 using CanadaImmigration.Api.Models;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MimeKit;
 
 namespace CanadaImmigration.Api.Services;
 
@@ -14,6 +15,7 @@ public class EmailNotifierConfig
     public string SenderPassword { get; set; } = string.Empty;
     public string SenderDisplayName { get; set; } = "Canada Immigration Tracker";
 
+    /// <summary>URL pública do site (frontend), usada nos links dos e-mails.</summary>
     public string SiteBaseUrl { get; set; } = string.Empty;
 }
 
@@ -33,36 +35,30 @@ public class EmailNotifier
         var subject = $"Nova rodada do Express Entry: {draw.Category} (CRS mínimo {draw.MinimumCrs})";
         var body = BuildBody(draw, unsubscribeToken);
 
-        try
-        {
-            using var smtpClient = new SmtpClient(_config.SmtpServer, _config.SmtpPort)
-            {
-                Credentials = new NetworkCredential(_config.SenderEmail, _config.SenderPassword),
-                EnableSsl = true
-            };
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_config.SenderDisplayName, _config.SenderEmail));
+        message.To.Add(MailboxAddress.Parse(recipientEmail));
+        message.Subject = subject;
+        message.Body = new BodyBuilder { HtmlBody = body }.ToMessageBody();
 
-            using var mailMessage = new MailMessage
-            {
-                From = new MailAddress(_config.SenderEmail, _config.SenderDisplayName),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true
-            };
-            mailMessage.To.Add(recipientEmail);
+        var secureSocketOptions = _config.SmtpPort == 465
+            ? SecureSocketOptions.SslOnConnect
+            : SecureSocketOptions.StartTls;
 
-            await smtpClient.SendMailAsync(mailMessage, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Falha ao enviar e-mail de notificação para {Email}", recipientEmail);
-        }
+        using var smtpClient = new SmtpClient();
+        await smtpClient.ConnectAsync(_config.SmtpServer, _config.SmtpPort, secureSocketOptions, cancellationToken);
+        await smtpClient.AuthenticateAsync(_config.SenderEmail, _config.SenderPassword, cancellationToken);
+        await smtpClient.SendAsync(message, cancellationToken);
+        await smtpClient.DisconnectAsync(true, cancellationToken);
+
+        _logger.LogInformation("E-mail de novo draw enviado para {Email} (draw #{DrawNumber})", recipientEmail, draw.DrawNumber);
     }
 
     private string BuildBody(ExpressEntryDraw draw, string unsubscribeToken)
     {
         var unsubscribeUrl = string.IsNullOrWhiteSpace(_config.SiteBaseUrl)
             ? null
-            : $"{_config.SiteBaseUrl.TrimEnd('/')}/api/subscriptions/unsubscribe?token={unsubscribeToken}";
+            : $"{_config.SiteBaseUrl.TrimEnd('/')}/unsubscribe?token={unsubscribeToken}";
 
         return $@"
             <html>
