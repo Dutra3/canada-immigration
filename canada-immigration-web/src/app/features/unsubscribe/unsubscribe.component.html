@@ -1,0 +1,26 @@
+<div class="unsubscribe-container">
+  <h1>Cancelar inscrição</h1>
+
+  @if (state() === 'loading') {
+    <div class="skeleton-list" aria-busy="true" aria-label="Processando">
+      <div class="skeleton" style="height: 24px; width: 60%;"></div>
+      <div class="skeleton" style="height: 16px; width: 90%;"></div>
+    </div>
+  }
+
+  @if (state() === 'success') {
+    <div class="result-card success">
+      <p>Você foi descadastrado com sucesso.</p>
+      <p>Não enviaremos mais alertas de novos draws para o seu e-mail.</p>
+      <a routerLink="/subscribe" class="link">Voltar para a página de inscrição</a>
+    </div>
+  }
+
+  @if (state() === 'error') {
+    <div class="result-card error">
+      <p>Não foi possível cancelar a inscrição.</p>
+      <p>O link pode ser inválido ou já ter sido usado. Se o problema persistir, tente novamente mais tarde.</p>
+      <a routerLink="/" class="link">Voltar para o início</a>
+    </div>
+  }
+</div>

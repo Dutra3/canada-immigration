@@ -5,6 +5,7 @@ import { PoolChartComponent } from './features/pools/pool-chart/pool-chart.compo
 import { SubscribeComponent } from './features/subscribe/subscribe.component';
 import { CrsTrendComponent } from './features/trends/crs-trend/crs-trend.component';
 import { CrsCalculatorComponent } from './features/crs-calculator/crs-calculator.component';
+import { UnsubscribeComponent } from './features/unsubscribe/unsubscribe.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'draws', pathMatch: 'full' },
@@ -14,4 +15,5 @@ export const routes: Routes = [
   { path: 'trends', component: CrsTrendComponent },
   { path: 'crs-calculator', component: CrsCalculatorComponent },
   { path: 'subscribe', component: SubscribeComponent },
+  { path: 'unsubscribe', component: UnsubscribeComponent },
 ];
