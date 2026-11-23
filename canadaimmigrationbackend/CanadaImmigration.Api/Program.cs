@@ -20,7 +20,8 @@ builder.Services.AddHttpClient<IExpressEntryDrawService, ExpressEntryDrawService
 {
     client.BaseAddress = new Uri(externalApiBaseUrl);
     client.Timeout = TimeSpan.FromSeconds(10);
-});
+})
+.AddStandardResilienceHandler();
 
 builder.Services.AddScoped<IProofOfFundsService, ProofOfFundsService>();
 builder.Services.AddScoped<ICrsScoreService, CrsScoreService>();
@@ -30,6 +31,10 @@ var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? "Data Source=canadaimmigration.db";
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
+
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>("database")
+    .AddCheck<ExternalApiHealthCheck>("external-api");
 
 builder.Services.AddScoped<ISubscriberService, SubscriberService>();
 
@@ -67,6 +72,19 @@ builder.Services.AddRateLimiter(options =>
                 Window = TimeSpan.FromMinutes(windowMinutes),
                 QueueLimit = 0
             }));
+
+    // Endpoints de cálculo são CPU-bound locais; limite generoso por IP contra abuso.
+    var computePermitLimit = builder.Configuration.GetValue<int?>("RateLimiting:ComputePermitLimit") ?? 60;
+
+    options.AddPolicy("compute", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = computePermitLimit,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
 });
 builder.Services.AddSingleton<EmailNotifier>();
 builder.Services.AddHostedService<ExpressEntryPollingService>();
@@ -90,6 +108,8 @@ app.UseHttpsRedirection();
 app.UseCors(AngularDevCorsPolicy);
 
 app.UseRateLimiter();
+
+app.MapHealthChecks("/health");
 
 app.UseAuthorization();
 
