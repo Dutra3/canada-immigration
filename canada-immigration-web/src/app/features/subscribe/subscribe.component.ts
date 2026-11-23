@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoryLabelPipe } from '../../core/pipes/category-label.pipe';
@@ -14,8 +14,6 @@ import { ALL_CATEGORIES_VALUE } from '../../models/subscription.model';
 })
 export class SubscribeComponent implements OnInit {
   readonly allCategoriesValue = ALL_CATEGORIES_VALUE;
-
-  @ViewChild('categorySelect') categorySelect?: ElementRef<HTMLSelectElement>;
 
   email = signal('');
   categories = signal<string[]>([]);
@@ -41,19 +39,24 @@ export class SubscribeComponent implements OnInit {
     });
   }
 
-  onCategoriesChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const selected = Array.from(select.selectedOptions).map((option) => option.value);
+  isCategorySelected(category: string): boolean {
+    return this.selectedCategories().includes(category);
+  }
 
-    if (selected.includes(this.allCategoriesValue) && selected.length > 1) {
-      Array.from(select.options).forEach((option) => {
-        option.selected = option.value === this.allCategoriesValue;
-      });
-      this.selectedCategories.set([this.allCategoriesValue]);
+  toggleCategory(category: string): void {
+    const current = this.selectedCategories();
+
+    if (category === this.allCategoriesValue) {
+      this.selectedCategories.set(current.includes(category) ? [] : [category]);
       return;
     }
 
-    this.selectedCategories.set(selected);
+    const withoutAll = current.filter((c) => c !== this.allCategoriesValue);
+    const next = withoutAll.includes(category)
+      ? withoutAll.filter((c) => c !== category)
+      : [...withoutAll, category];
+
+    this.selectedCategories.set(next);
   }
 
   subscribe(): void {

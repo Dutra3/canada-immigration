@@ -7,29 +7,51 @@
   <section class="card form-card">
     <div class="form-group">
       <label for="email">E-mail</label>
-      <input
-        id="email"
-        type="email"
-        placeholder="seu@email.com"
-        [ngModel]="email()"
-        (ngModelChange)="email.set($event)"
-      />
+      <div class="email-field">
+        <svg class="email-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="3"/>
+          <path d="m2 7 10 6 10-6"/>
+        </svg>
+        <input
+          id="email"
+          type="email"
+          placeholder="seu@email.com"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+        />
+      </div>
     </div>
 
     <div class="form-group">
-      <label for="categories">Categorias</label>
+      <label>Categorias</label>
       @if (isLoadingCategories()) {
-        <div class="skeleton-list" aria-busy="true" aria-label="Carregando categorias">
-          <div class="skeleton" style="height: 160px;"></div>
+        <div class="cat-options skeleton-list" aria-busy="true" aria-label="Carregando categorias">
+          <div class="skeleton cat-skeleton"></div>
+          <div class="skeleton cat-skeleton"></div>
+          <div class="skeleton cat-skeleton"></div>
         </div>
       } @else {
-        <select id="categories" #categorySelect multiple (change)="onCategoriesChange($event)">
-          <option [value]="allCategoriesValue">Todas / Qualquer categoria</option>
+        <div class="cat-options">
+          <label class="cat-option cat-option-all" [class.selected]="isCategorySelected(allCategoriesValue)">
+            <input
+              type="checkbox"
+              [checked]="isCategorySelected(allCategoriesValue)"
+              (change)="toggleCategory(allCategoriesValue)"
+            />
+            <span>Todas / Qualquer categoria</span>
+          </label>
           @for (category of categories(); track category) {
-            <option [value]="category">{{ category | categoryLabel }}</option>
+            <label class="cat-option" [class.selected]="isCategorySelected(category)">
+              <input
+                type="checkbox"
+                [checked]="isCategorySelected(category)"
+                (change)="toggleCategory(category)"
+              />
+              <span>{{ category | categoryLabel }}</span>
+            </label>
           }
-        </select>
-        <small>Segure Ctrl (ou Cmd no Mac) para selecionar mais de uma categoria.</small>
+        </div>
+        <small>Você pode marcar mais de uma categoria.</small>
       }
     </div>
 

@@ -17,15 +17,6 @@ describe('SubscribeComponent', () => {
     return TestBed.createComponent(SubscribeComponent);
   }
 
-  function buildSelectEvent(values: string[], selectedValues: string[]): Event {
-    const options = values.map(value => ({ value, selected: selectedValues.includes(value) }));
-    const select = {
-      options,
-      selectedOptions: options.filter(o => o.selected),
-    };
-    return { target: select } as unknown as Event;
-  }
-
   it('deve criar o componente', async () => {
     const fixture = await setup({});
     expect(fixture.componentInstance).toBeTruthy();
@@ -54,27 +45,48 @@ describe('SubscribeComponent', () => {
     });
   });
 
-  describe('onCategoriesChange', () => {
-    it('deve guardar as categorias selecionadas', async () => {
+  describe('toggleCategory', () => {
+    it('deve adicionar e remover categorias individuais', async () => {
       const fixture = await setup({});
       const component = fixture.componentInstance;
 
-      component.onCategoriesChange(buildSelectEvent(['CEC', 'PNP', 'French'], ['CEC', 'PNP']));
-
+      component.toggleCategory('CEC');
+      component.toggleCategory('PNP');
       expect(component.selectedCategories()).toEqual(['CEC', 'PNP']);
+      expect(component.isCategorySelected('CEC')).toBe(true);
+
+      component.toggleCategory('PNP');
+      expect(component.selectedCategories()).toEqual(['CEC']);
     });
 
-    it('deve colapsar para ALL quando ALL está entre as selecionadas', async () => {
+    it('deve selecionar apenas ALL ao marcar "Todas/Qualquer"', async () => {
       const fixture = await setup({});
       const component = fixture.componentInstance;
 
-      const event = buildSelectEvent([ALL_CATEGORIES_VALUE, 'CEC', 'PNP'], [ALL_CATEGORIES_VALUE, 'CEC']);
-      component.onCategoriesChange(event);
+      component.toggleCategory('CEC');
+      component.toggleCategory(ALL_CATEGORIES_VALUE);
 
       expect(component.selectedCategories()).toEqual([ALL_CATEGORIES_VALUE]);
+    });
 
-      const options = (event.target as unknown as { options: { value: string; selected: boolean }[] }).options;
-      expect(options.filter(o => o.selected).map(o => o.value)).toEqual([ALL_CATEGORIES_VALUE]);
+    it('deve trocar ALL por uma categoria específica ao marcá-la', async () => {
+      const fixture = await setup({});
+      const component = fixture.componentInstance;
+
+      component.toggleCategory(ALL_CATEGORIES_VALUE);
+      component.toggleCategory('CEC');
+
+      expect(component.selectedCategories()).toEqual(['CEC']);
+    });
+
+    it('deve limpar a seleção ao desmarcar ALL', async () => {
+      const fixture = await setup({});
+      const component = fixture.componentInstance;
+
+      component.toggleCategory(ALL_CATEGORIES_VALUE);
+      component.toggleCategory(ALL_CATEGORIES_VALUE);
+
+      expect(component.selectedCategories()).toEqual([]);
     });
   });
 
