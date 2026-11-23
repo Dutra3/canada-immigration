@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using CanadaImmigration.Api.Models;
 using CanadaImmigration.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CanadaImmigration.Api.Controllers;
 
@@ -16,7 +18,8 @@ public class ProofOfFundsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<ProofOfFundsResult> Get([FromQuery] int familySize)
+    [EnableRateLimiting("compute")]
+    public ActionResult<ProofOfFundsResult> Get([FromQuery, Range(1, 50)] int familySize)
     {
         if (familySize < 1)
         {

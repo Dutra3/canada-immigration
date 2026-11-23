@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using CanadaImmigration.Api.Models;
 using CanadaImmigration.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +20,9 @@ public class ExpressEntryDrawsController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<PagedResult<ExpressEntryDraw>>> GetDraws(
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = DefaultPageSize,
-        [FromQuery] int? year = null,
+        [FromQuery, Range(1, int.MaxValue)] int page = 1,
+        [FromQuery, Range(1, 200)] int pageSize = DefaultPageSize,
+        [FromQuery, Range(1900, 2100)] int? year = null,
         [FromQuery] string? category = null,
         CancellationToken cancellationToken = default)
     {

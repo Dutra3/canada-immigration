@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using CanadaImmigration.Api.Models;
 using CanadaImmigration.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CanadaImmigration.Api.Controllers;
 
@@ -18,6 +20,7 @@ public class CrsScoreController : ControllerBase
     }
 
     [HttpPost]
+    [EnableRateLimiting("compute")]
     public ActionResult<CrsScoreResult> Calculate([FromBody] CrsScoreRequest request)
     {
         if (request.Age < 0
@@ -33,9 +36,10 @@ public class CrsScoreController : ControllerBase
     }
 
     [HttpGet("invitation")]
+    [EnableRateLimiting("compute")]
     public async Task<ActionResult<InvitationAnalysis>> Invitation(
-        [FromQuery] int score,
-        [FromQuery] int canadianWorkYears,
+        [FromQuery, Range(0, 1200)] int score,
+        [FromQuery, Range(0, 50)] int canadianWorkYears,
         [FromQuery] bool hasFrenchProficiency,
         [FromQuery] bool hasProvincialNomination,
         CancellationToken cancellationToken)
