@@ -4,7 +4,7 @@
 
 Sistema web sem login para consultar dados públicos de imigração canadense (Express Entry), calcular sua nota CRS e receber alertas por e-mail quando uma nova chamada (draw) for publicada.
 
-Projeto pessoal de estudo e portfólio, feito para praticar .NET 8 / C# e Angular 22 com boas práticas — arquitetura em camadas, testes automatizados nas duas pontas e configuração via ambiente em vez de valores hardcoded. Dependências mínimas: no backend, apenas EF Core/SQLite para persistência; no frontend, nenhuma biblioteca adicional de UI.
+Projeto pessoal de estudo e portfólio, feito para praticar .NET 8 / C# e Angular 22 com boas práticas — arquitetura em camadas, testes automatizados nas duas pontas e configuração via ambiente em vez de valores hardcoded. Dependências externas mínimas: no backend, EF Core/SQLite para persistência, MailKit para envio de e-mail e o pipeline de resiliência oficial da Microsoft (`Microsoft.Extensions.Http.Resilience`, baseado em Polly) para chamadas à API externa; no frontend, nenhuma biblioteca adicional de UI.
 
 ## O que o projeto faz
 
@@ -55,12 +55,17 @@ dotnet run
 - A API sobe por padrão em `http://localhost:5088` (confirme no terminal ao rodar, ou em `Properties/launchSettings.json` — a porta pode variar entre máquinas).
 - Documentação interativa (Swagger) disponível em `http://localhost:5088/swagger`.
 - CORS e a URL da API externa são configurados via `appsettings.json` (chaves `Cors:AllowedOrigin` e `ExternalApi:BaseUrl`), não hardcoded no código.
-- As respostas da API externa ficam em **cache em memória por 15 minutos** (`IMemoryCache`), para não bater na API community a cada request — configurável via `ExternalApi:CacheMinutes`.
+- As respostas da API externa ficam em **cache em memória por 15 minutos** (`IMemoryCache`), para não bater na API community a cada request — configurável via `ExternalApi:CacheMinutes`. Como o cache é em memória, ele **não é compartilhado entre instâncias**: se um dia o backend rodar em múltiplas réplicas, vale migrar para `IDistributedCache`/FusionCache.
+- As chamadas à API externa passam por um **pipeline de resiliência** (retry com backoff exponencial + jitter, circuit breaker e timeout) via `Microsoft.Extensions.Http.Resilience`, para tolerar instabilidades da API community sem derrubar os endpoints.
 - Na primeira execução, o backend cria automaticamente o banco SQLite `canadaimmigration.db` na pasta do projeto, aplicando as migrations de `Data/Migrations/` no startup. A connection string pode ser alterada via `ConnectionStrings:Default` no `appsettings.json`.
+- **Limitação do SQLite em produção**: o arquivo do banco vive no disco da instância que está rodando. Em deploy com containers/PaaS, os dados (inscrições, estado do polling e logs de notificação) **não sobrevivem a um redeploy** e não são compartilhados entre réplicas. Para produção real, o caminho é migrar para Postgres (ou outro banco cliente-servidor) — o código já está isolado atrás do `AppDbContext`, então a troca é basicamente trocar o provider e gerar uma nova migration.
+- Existe um endpoint de health check em **`GET /health`**, que verifica a conectividade com o SQLite e com a API externa do Express Entry — útil para monitoramento e probes de deploy.
 
 ### Configurando as notificações por e-mail (opcional)
 
-O backend inclui um serviço em background (`ExpressEntryPollingService`) que verifica a API pública a cada **60 minutos** (configurável via `ExpressEntryPolling:IntervalMinutes`), somente entre **7h e 19h de Brasília, de segunda a sábado**. Ao detectar um draw novo, ele envia e-mail aos inscritos da categoria correspondente.
+O backend inclui um serviço em background (`ExpressEntryPollingService`) que verifica a API pública a cada **60 minutos** (configurável via `ExpressEntryPolling:IntervalMinutes`), somente entre **7h e 19h de Brasília, de segunda a sábado**. Ao detectar um draw novo, ele envia e-mail aos inscritos da categoria correspondente — cada envio é isolado em try/catch, então um endereço inválido não interrompe o lote, e cada tentativa fica registrada na tabela `NotificationLogs` (auditoria de "quem recebeu o alerta de qual draw"). O envio usa **MailKit** (SMTP moderno, com STARTTLS na porta 587 ou SSL direto na 465). Todo e-mail inclui um link para `/unsubscribe?token=...` no frontend, que chama `GET /api/Subscriptions/unsubscribe` e mostra uma página amigável de confirmação.
+
+A chave `Email:SiteBaseUrl` do `appsettings.json` deve apontar para a **URL pública do frontend** (ex.: `http://localhost:4200` em dev), pois é ela que monta o link de cancelamento dentro do e-mail.
 
 Para o envio funcionar, é preciso preencher a seção `Email` do `appsettings.json` (servidor SMTP, remetente e senha). Como envolve credencial, o recomendado é usar **user-secrets** em desenvolvimento ou variáveis de ambiente em produção:
 
@@ -76,7 +81,7 @@ dotnet user-secrets set "Email:SenderPassword" "sua-app-password"
 
 Sem SMTP configurado, o resto do sistema funciona normalmente (draws, pool, proof of funds e até o cadastro de inscrições) — apenas os e-mails não são enviados, e o erro é registrado nos logs do backend.
 
-O endpoint `POST /api/Subscriptions` tem **rate limit de 5 requisições por minuto por IP** (retorna HTTP 429 acima disso), como proteção contra spam de cadastros — configurável via `RateLimiting:SubscribePermitLimit` e `RateLimiting:SubscribeWindowMinutes` no `appsettings.json`.
+O endpoint `POST /api/Subscriptions` tem **rate limit de 5 requisições por minuto por IP** (retorna HTTP 429 acima disso), como proteção contra spam de cadastros — configurável via `RateLimiting:SubscribePermitLimit` e `RateLimiting:SubscribeWindowMinutes` no `appsettings.json`. Os endpoints de cálculo (`POST /api/CrsScore`, `GET /api/CrsScore/invitation` e `GET /api/ProofOfFunds`) têm um limite mais generoso de **60 requisições por minuto por IP** (`RateLimiting:ComputePermitLimit`), já que são computação local sem cache.
 
 ## Como rodar o frontend
 
@@ -91,7 +96,9 @@ ng serve
 
 - A aplicação sobe em `http://localhost:4200`.
 - Por padrão (`ng serve`), o frontend já aponta para o backend local em `http://localhost:5088/api` (configurado em `src/environments/environment.development.ts`).
+- Em produção (`environment.ts`), o `apiBaseUrl` é `/api` — ou seja, o build assume que frontend e API são servidos do **mesmo domínio** (ou atrás de um proxy que encaminhe `/api`). Se a API estiver em outro host, ajuste `apiBaseUrl` para a URL completa.
 - **Importante**: o backend (`dotnet run`) precisa estar rodando em paralelo para as telas de Draws, Pool, Proof of Funds e o formulário de inscrição funcionarem — sem ele, o app carrega normalmente mas exibe mensagens de erro ao buscar dados.
+- Todas as chamadas HTTP passam por um **interceptor** (`core/interceptors/api.interceptor.ts`) que aplica timeout de 20s e traduz erros para mensagens amigáveis em português (incluindo o 429 de rate limit). Cada rota define `title`/`description` no `app.routes.ts`, aplicados ao `<title>` e à meta description via `AppTitleStrategy`.
 
 ## Como rodar os testes
 
