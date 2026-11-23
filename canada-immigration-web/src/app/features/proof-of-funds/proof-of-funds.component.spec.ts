@@ -96,7 +96,7 @@ describe('ProofOfFundsComponent', () => {
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement as HTMLElement;
-      expect(compiled.querySelector('.result')?.textContent).toContain('4');
+      expect(compiled.querySelector('.result-card')?.textContent).toContain('4');
     });
   });
 

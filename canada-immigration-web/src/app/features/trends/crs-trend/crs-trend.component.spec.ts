@@ -14,7 +14,7 @@ describe('CrsTrendComponent', () => {
   const mockPagedResult: PagedResult<ExpressEntryDraw> = {
     items: mockDraws,
     page: 1,
-    pageSize: 1000,
+    pageSize: 200,
     totalCount: 3,
     totalPages: 1,
   };
@@ -48,7 +48,7 @@ describe('CrsTrendComponent', () => {
       const fixture = await setup({ getDraws: getDrawsSpy, getCategories: getCategoriesSpy, getYears: getYearsSpy });
       fixture.detectChanges();
 
-      expect(getDrawsSpy).toHaveBeenCalledWith(1, 1000, undefined, undefined);
+      expect(getDrawsSpy).toHaveBeenCalledWith(1, 200, undefined, undefined);
       expect(getCategoriesSpy).toHaveBeenCalled();
       expect(getYearsSpy).toHaveBeenCalled();
       expect(fixture.componentInstance.categories()).toEqual(['CEC', 'PNP']);
@@ -80,7 +80,7 @@ describe('CrsTrendComponent', () => {
       component.selectedCategory.set('PNP');
       component.onFilterChange();
 
-      expect(getDrawsSpy).toHaveBeenCalledWith(1, 1000, undefined, 'PNP');
+      expect(getDrawsSpy).toHaveBeenCalledWith(1, 200, undefined, 'PNP');
     });
 
     it('onFilterChange deve recarregar os draws com o ano selecionado', async () => {
@@ -94,7 +94,7 @@ describe('CrsTrendComponent', () => {
       component.selectedYear.set(2025);
       component.onFilterChange();
 
-      expect(getDrawsSpy).toHaveBeenCalledWith(1, 1000, 2025, undefined);
+      expect(getDrawsSpy).toHaveBeenCalledWith(1, 200, 2025, undefined);
     });
 
     it('onFilterChange deve combinar ano e categoria', async () => {
@@ -109,7 +109,7 @@ describe('CrsTrendComponent', () => {
       component.selectedCategory.set('CEC');
       component.onFilterChange();
 
-      expect(getDrawsSpy).toHaveBeenCalledWith(1, 1000, 2024, 'CEC');
+      expect(getDrawsSpy).toHaveBeenCalledWith(1, 200, 2024, 'CEC');
     });
   });
 
@@ -161,6 +161,25 @@ describe('CrsTrendComponent', () => {
 
       expect(fixture.componentInstance.chart().points).toEqual([]);
       expect(fixture.componentInstance.chart().polyline).toBe('');
+    });
+  });
+
+  describe('paginação', () => {
+    it('deve buscar todas as páginas quando totalCount excede o pageSize', async () => {
+      const page1Items = Array.from({ length: 200 }, (_, i) => ({
+        ...mockDraws[0],
+        drawNumber: i + 1,
+      }));
+      const page1 = { items: page1Items, page: 1, pageSize: 200, totalCount: 201, totalPages: 2 };
+      const page2 = { items: [mockDraws[1]], page: 2, pageSize: 200, totalCount: 201, totalPages: 2 };
+      const getDrawsSpy = vi.fn().mockImplementation((page: number) => of(page === 1 ? page1 : page2));
+
+      const fixture = await setup({ getDraws: getDrawsSpy });
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(getDrawsSpy).toHaveBeenCalledTimes(2);
+      expect(fixture.componentInstance.draws().length).toBe(201);
     });
   });
 });

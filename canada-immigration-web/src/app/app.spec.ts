@@ -21,13 +21,13 @@ describe('App', () => {
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
 
-    const links = compiled.querySelectorAll('nav.tabs a');
+    const links = compiled.querySelectorAll('.nav-links a');
     expect(links.length).toBe(6);
-    expect(links[0].textContent).toContain('Express Entry Draws');
-    expect(links[1].textContent).toContain('Proof of Funds');
-    expect(links[2].textContent).toContain('Pool CRS');
-    expect(links[3].textContent).toContain('Tendência CRS');
-    expect(links[4].textContent).toContain('Calculadora CRS');
-    expect(links[5].textContent).toContain('Receber E-mail');
+    expect(links[0].textContent).toContain('Draws');
+    expect(links[1].textContent).toContain('Pool CRS');
+    expect(links[2].textContent).toContain('Tendências');
+    expect(links[3].textContent).toContain('Calculadora CRS');
+    expect(links[4].textContent).toContain('Proof of Funds');
+    expect(links[5].textContent).toContain('Alertas');
   });
 });

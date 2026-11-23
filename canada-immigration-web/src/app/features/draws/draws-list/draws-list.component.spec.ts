@@ -117,8 +117,9 @@ describe('DrawsListComponent', () => {
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement as HTMLElement;
-      expect(compiled.textContent).toContain('#441');
-      expect(compiled.textContent).not.toContain('#200');
+      const hero = compiled.querySelector('.hero');
+      expect(hero?.textContent).toContain('#441');
+      expect(hero?.textContent).not.toContain('#200');
     });
   });
 
