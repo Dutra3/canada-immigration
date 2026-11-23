@@ -2,7 +2,10 @@
   <h1>Express Entry — Últimas Chamadas (Draws)</h1>
 
   @if (isLoading()) {
-    <p>Carregando...</p>
+    <div class="skeleton-list" aria-busy="true" aria-label="Carregando draws">
+      <div class="skeleton" style="height: 90px;"></div>
+      <div class="skeleton" style="height: 320px;"></div>
+    </div>
   }
 
   @if (errorMessage()) {

@@ -2,7 +2,10 @@
   <h1>Express Entry — Tendência do CRS mínimo</h1>
 
   @if (isLoading()) {
-    <p>Carregando...</p>
+    <div class="skeleton-list" aria-busy="true" aria-label="Carregando tendência do CRS">
+      <div class="skeleton" style="height: 90px;"></div>
+      <div class="skeleton" style="height: 380px;"></div>
+    </div>
   }
 
   @if (errorMessage()) {

@@ -2,7 +2,10 @@
   <h1>Express Entry — Distribuição do Pool CRS</h1>
 
   @if (isLoading()) {
-    <p>Carregando...</p>
+    <div class="skeleton-list" aria-busy="true" aria-label="Carregando distribuição do pool">
+      <div class="skeleton" style="height: 90px;"></div>
+      <div class="skeleton" style="height: 380px;"></div>
+    </div>
   }
 
   @if (errorMessage()) {
