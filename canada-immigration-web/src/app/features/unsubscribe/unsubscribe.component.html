@@ -1,26 +1,33 @@
-<div class="unsubscribe-container">
-  <h1>Cancelar inscrição</h1>
+<div class="page-container unsubscribe-page">
+  <header class="page-header">
+    <h1>Cancelar inscrição</h1>
+  </header>
 
   @if (state() === 'loading') {
     <div class="skeleton-list" aria-busy="true" aria-label="Processando">
-      <div class="skeleton" style="height: 24px; width: 60%;"></div>
-      <div class="skeleton" style="height: 16px; width: 90%;"></div>
+      <div class="skeleton" style="height: 120px;"></div>
     </div>
   }
 
   @if (state() === 'success') {
-    <div class="result-card success">
-      <p>Você foi descadastrado com sucesso.</p>
-      <p>Não enviaremos mais alertas de novos draws para o seu e-mail.</p>
-      <a routerLink="/subscribe" class="link">Voltar para a página de inscrição</a>
-    </div>
+    <section class="card result-card">
+      <span class="result-icon success-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      <h2>Inscrição cancelada</h2>
+      <p>Você foi descadastrado com sucesso. Não enviaremos mais alertas de novos draws para o seu e-mail.</p>
+      <a routerLink="/subscribe" class="btn">Voltar para a página de inscrição</a>
+    </section>
   }
 
   @if (state() === 'error') {
-    <div class="result-card error">
-      <p>Não foi possível cancelar a inscrição.</p>
+    <section class="card result-card">
+      <span class="result-icon error-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+      </span>
+      <h2>Não foi possível cancelar</h2>
       <p>O link pode ser inválido ou já ter sido usado. Se o problema persistir, tente novamente mais tarde.</p>
-      <a routerLink="/" class="link">Voltar para o início</a>
-    </div>
+      <a routerLink="/" class="btn">Voltar para o início</a>
+    </section>
   }
 </div>

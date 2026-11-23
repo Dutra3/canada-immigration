@@ -1,10 +1,13 @@
-<div class="draws-container">
-  <h1>Express Entry — Últimas Chamadas (Draws)</h1>
+<div class="page-container">
+  <header class="page-header">
+    <h1>Express Entry Draws</h1>
+    <p>Histórico das chamadas com convites emitidos e pontuação CRS mínima.</p>
+  </header>
 
   @if (isLoading()) {
     <div class="skeleton-list" aria-busy="true" aria-label="Carregando draws">
-      <div class="skeleton" style="height: 90px;"></div>
-      <div class="skeleton" style="height: 320px;"></div>
+      <div class="skeleton" style="height: 110px;"></div>
+      <div class="skeleton" style="height: 340px;"></div>
     </div>
   }
 
@@ -12,87 +15,97 @@
     <p class="error">{{ errorMessage() }}</p>
   }
 
-  @if (latestDraw()) {
-    <div class="metrics">
-      <div class="metric-card">
-        <p class="label">Último draw</p>
-        <p class="value">#{{ latestDraw()!.drawNumber }}</p>
+  @if (latestDraw(); as latest) {
+    <section class="hero card">
+      <div class="hero-main">
+        <span class="hero-label">Último draw</span>
+        <div class="hero-title-row">
+          <span class="hero-number">#{{ latest.drawNumber }}</span>
+          <span class="cat-badge cat-{{ latest.category | categoryClass }}">{{ latest.category | categoryLabel }}</span>
+        </div>
+        <span class="hero-date">{{ latest.date | date: 'dd/MM/yyyy' }}</span>
       </div>
-      <div class="metric-card">
-        <p class="label">CRS mínimo</p>
-        <p class="value">{{ latestDraw()!.minimumCRS }}</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-label">CRS mínimo</span>
+          <span class="hero-stat-value">{{ latest.minimumCRS }}</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-label">Convites emitidos</span>
+          <span class="hero-stat-value">{{ latest.invitationsIssued | number }}</span>
+        </div>
       </div>
-      <div class="metric-card">
-        <p class="label">Convites</p>
-        <p class="value">{{ latestDraw()!.invitationsIssued }}</p>
-      </div>
-    </div>
+    </section>
   }
 
-  <div class="filters">
-    <div class="form-group">
-      <label for="year-filter">Ano</label>
-      <select
-        id="year-filter"
-        [ngModel]="selectedYear()"
-        (ngModelChange)="selectedYear.set($event); onFilterChange()"
-      >
-        <option [ngValue]="null">Todos os anos</option>
-        @for (year of years(); track year) {
-          <option [ngValue]="year">{{ year }}</option>
-        }
-      </select>
-    </div>
+  <section class="card filters-card">
+    <div class="filters">
+      <div class="form-group">
+        <label for="year-filter">Ano</label>
+        <select
+          id="year-filter"
+          [ngModel]="selectedYear()"
+          (ngModelChange)="selectedYear.set($event); onFilterChange()"
+        >
+          <option [ngValue]="null">Todos os anos</option>
+          @for (year of years(); track year) {
+            <option [ngValue]="year">{{ year }}</option>
+          }
+        </select>
+      </div>
 
-    <div class="form-group">
-      <label for="category-filter">Categoria</label>
-      <select
-        id="category-filter"
-        [ngModel]="selectedCategory()"
-        (ngModelChange)="selectedCategory.set($event); onFilterChange()"
-      >
-        <option [ngValue]="null">Todas as categorias</option>
-        @for (category of categories(); track category) {
-          <option [ngValue]="category">{{ category | categoryLabel }}</option>
-        }
-      </select>
+      <div class="form-group">
+        <label for="category-filter">Categoria</label>
+        <select
+          id="category-filter"
+          [ngModel]="selectedCategory()"
+          (ngModelChange)="selectedCategory.set($event); onFilterChange()"
+        >
+          <option [ngValue]="null">Todas as categorias</option>
+          @for (category of categories(); track category) {
+            <option [ngValue]="category">{{ category | categoryLabel }}</option>
+          }
+        </select>
+      </div>
     </div>
-  </div>
+  </section>
 
   @if (!isLoading() && !errorMessage() && draws().length === 0) {
-    <p>Nenhum draw encontrado para os filtros selecionados.</p>
+    <p class="empty-state">Nenhum draw encontrado para os filtros selecionados.</p>
   }
 
   @if (!isLoading() && !errorMessage() && draws().length > 0) {
-    <div class="table-card">
+    <section class="card table-card">
       <table>
         <thead>
           <tr>
             <th>Draw</th>
             <th>Data</th>
-            <th>Programa</th>
-            <th>Convites</th>
-            <th>CRS</th>
+            <th>Categoria</th>
+            <th class="num">Convites</th>
+            <th class="num">CRS mín.</th>
           </tr>
         </thead>
         <tbody>
           @for (draw of draws(); track draw.drawNumber) {
             <tr>
-              <td><span class="draw-badge">{{ draw.drawNumber }}</span></td>
+              <td><span class="draw-number">#{{ draw.drawNumber }}</span></td>
               <td>{{ draw.date | date: 'dd/MM/yyyy' }}</td>
-              <td>{{ draw.category | categoryLabel }}</td>
-              <td>{{ draw.invitationsIssued }}</td>
-              <td>{{ draw.minimumCRS }}</td>
+              <td>
+                <span class="cat-badge cat-{{ draw.category | categoryClass }}">{{ draw.category | categoryLabel }}</span>
+              </td>
+              <td class="num">{{ draw.invitationsIssued | number }}</td>
+              <td class="num crs">{{ draw.minimumCRS }}</td>
             </tr>
           }
         </tbody>
       </table>
-    </div>
+    </section>
 
-    <div class="pagination">
-      <button (click)="goToPreviousPage()" [disabled]="currentPage() === 1">Anterior</button>
-      <span>Página {{ currentPage() }} de {{ totalPages() }}</span>
-      <button (click)="goToNextPage()" [disabled]="currentPage() === totalPages()">Próxima</button>
-    </div>
+    <nav class="pagination" aria-label="Paginação">
+      <button class="btn" (click)="goToPreviousPage()" [disabled]="currentPage() === 1">Anterior</button>
+      <span class="page-info">Página {{ currentPage() }} de {{ totalPages() }}</span>
+      <button class="btn" (click)="goToNextPage()" [disabled]="currentPage() === totalPages()">Próxima</button>
+    </nav>
   }
 </div>

@@ -1,10 +1,23 @@
-<nav class="tabs">
-  <a routerLink="/draws" routerLinkActive="active">Express Entry Draws</a>
-  <a routerLink="/proof-of-funds" routerLinkActive="active">Proof of Funds</a>
-  <a routerLink="/pool" routerLinkActive="active">Pool CRS</a>
-  <a routerLink="/trends" routerLinkActive="active">Tendência CRS</a>
-  <a routerLink="/crs-calculator" routerLinkActive="active">Calculadora CRS</a>
-  <a routerLink="/subscribe" routerLinkActive="active">Receber E-mail</a>
-</nav>
+<header class="topbar">
+  <a routerLink="/draws" class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M12 2v20M3 7l9 5 9-5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M7.5 4.5 12 7l4.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand-name">Canada Immigration Tracker</span>
+  </a>
 
-<router-outlet />
+  <nav class="nav-links">
+    <a routerLink="/draws" routerLinkActive="active">Draws</a>
+    <a routerLink="/pool" routerLinkActive="active">Pool CRS</a>
+    <a routerLink="/trends" routerLinkActive="active">Tendências</a>
+    <a routerLink="/crs-calculator" routerLinkActive="active">Calculadora CRS</a>
+    <a routerLink="/proof-of-funds" routerLinkActive="active">Proof of Funds</a>
+    <a routerLink="/subscribe" routerLinkActive="active" class="nav-cta">Alertas</a>
+  </nav>
+</header>
+
+<main class="page">
+  <router-outlet />
+</main>

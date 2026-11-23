@@ -1,55 +1,62 @@
-<div class="crs-container">
-  <h1>Calculadora CRS — Express Entry</h1>
-  <p>Preencha seus dados para calcular a nota no Comprehensive Ranking System, com base nas tabelas oficiais do IRCC.</p>
+<div class="page-container crs-page">
+  <header class="page-header">
+    <h1>Calculadora CRS</h1>
+    <p>Estime sua nota no Comprehensive Ranking System com base nas tabelas oficiais do IRCC.</p>
+  </header>
 
-  <div class="notice">
+  <div class="notice card">
     <strong>Atenção:</strong> esta é apenas uma <strong>simulação</strong>. Sua nota real só é confirmada ao criar um perfil no Express Entry.
     Calcular aqui <strong>não cria nenhum cadastro</strong> no sistema oficial.
   </div>
 
-  <div class="form-section">
+  <section class="card form-section">
     <h2>Dados principais</h2>
 
-    <div class="form-group">
-      <label for="age">Idade</label>
-      <input id="age" type="number" min="0" [ngModel]="age()" (ngModelChange)="age.set($event)" />
+    <div class="form-row">
+      <div class="form-group">
+        <label for="age">Idade</label>
+        <input id="age" type="number" min="0" [ngModel]="age()" (ngModelChange)="age.set($event)" />
+      </div>
+
+      <div class="form-group">
+        <label for="education">Nível de educação</label>
+        <select id="education" [ngModel]="education()" (ngModelChange)="education.set($event)">
+          @for (opt of educationOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="education">Nível de educação</label>
-      <select id="education" [ngModel]="education()" (ngModelChange)="education.set($event)">
-        @for (opt of educationOptions; track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
-        }
-      </select>
-    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="canadianWork">Experiência de trabalho no Canadá</label>
+        <select id="canadianWork" [ngModel]="canadianWorkYears()" (ngModelChange)="canadianWorkYears.set($event)">
+          @for (opt of workYearOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
 
-    <div class="form-group">
-      <label for="canadianWork">Experiência de trabalho no Canadá</label>
-      <select id="canadianWork" [ngModel]="canadianWorkYears()" (ngModelChange)="canadianWorkYears.set($event)">
-        @for (opt of workYearOptions; track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
-        }
-      </select>
+      <div class="form-group">
+        <label for="foreignWork">Experiência de trabalho no exterior</label>
+        <select id="foreignWork" [ngModel]="foreignWorkYears()" (ngModelChange)="foreignWorkYears.set($event)">
+          @for (opt of workYearOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
     </div>
+  </section>
 
-    <div class="form-group">
-      <label for="foreignWork">Experiência de trabalho no exterior</label>
-      <select id="foreignWork" [ngModel]="foreignWorkYears()" (ngModelChange)="foreignWorkYears.set($event)">
-        @for (opt of workYearOptions; track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
-        }
-      </select>
-    </div>
-  </div>
-
-  <div class="form-section">
-    <h2>Primeira língua oficial (CLB/NCLC por habilidade)</h2>
+  <section class="card form-section">
+    <h2>Primeira língua oficial</h2>
+    <p class="section-subtitle">CLB/NCLC por habilidade</p>
 
     <div class="checkbox-group">
-      <label>
+      <label class="checkbox">
         <input type="checkbox" [ngModel]="firstLanguageIsFrench()" (ngModelChange)="firstLanguageIsFrench.set($event)" />
-        Minha primeira língua oficial é francês (NCLC)
+        <span>Minha primeira língua oficial é francês (NCLC)</span>
       </label>
     </div>
 
@@ -65,15 +72,15 @@
         </div>
       }
     </div>
-  </div>
+  </section>
 
-  <div class="form-section">
-    <h2>Segunda língua oficial (opcional)</h2>
+  <section class="card form-section">
+    <h2>Segunda língua oficial <span class="optional">(opcional)</span></h2>
 
     <div class="checkbox-group">
-      <label>
+      <label class="checkbox">
         <input type="checkbox" [ngModel]="hasSecondLanguage()" (ngModelChange)="hasSecondLanguage.set($event)" />
-        Tenho resultado de teste da segunda língua oficial
+        <span>Tenho resultado de teste da segunda língua oficial</span>
       </label>
     </div>
 
@@ -91,157 +98,170 @@
         }
       </div>
     }
-  </div>
+  </section>
 
-  <div class="form-section">
+  <section class="card form-section">
     <h2>Pontos adicionais</h2>
 
-    <div class="form-group">
-      <label for="canadianEducation">Educação no Canadá</label>
-      <select id="canadianEducation" [ngModel]="canadianEducation()" (ngModelChange)="canadianEducation.set($event)">
-        @for (opt of canadianEducationOptions; track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
-        }
-      </select>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="canadianEducation">Educação no Canadá</label>
+        <select id="canadianEducation" [ngModel]="canadianEducation()" (ngModelChange)="canadianEducation.set($event)">
+          @for (opt of canadianEducationOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
     </div>
 
     <div class="checkbox-group">
-      <label>
+      <label class="checkbox">
         <input type="checkbox" [ngModel]="hasProvincialNomination()" (ngModelChange)="hasProvincialNomination.set($event)" />
-        Tenho nomeação provincial (PNP)
+        <span>Tenho nomeação provincial (PNP)</span>
       </label>
-      <label>
+      <label class="checkbox">
         <input type="checkbox" [ngModel]="hasSiblingInCanada()" (ngModelChange)="hasSiblingInCanada.set($event)" />
-        Tenho irmão/irmã cidadão ou residente permanente no Canadá
+        <span>Tenho irmão/irmã cidadão ou residente permanente no Canadá</span>
       </label>
-      <label>
+      <label class="checkbox">
         <input type="checkbox" [ngModel]="hasCertificateOfQualification()" (ngModelChange)="hasCertificateOfQualification.set($event)" />
-        Tenho certificado de qualificação em ofício (trade)
+        <span>Tenho certificado de qualificação em ofício (trade)</span>
       </label>
     </div>
-  </div>
+  </section>
 
-  <div class="form-section">
+  <section class="card form-section">
     <h2>Cônjuge ou companheiro(a)</h2>
 
     <div class="checkbox-group">
-      <label>
+      <label class="checkbox">
         <input type="checkbox" [ngModel]="hasSpouse()" (ngModelChange)="hasSpouse.set($event)" />
-        Meu cônjuge/companheiro(a) vai imigrar comigo
+        <span>Meu cônjuge/companheiro(a) vai imigrar comigo</span>
       </label>
     </div>
 
     @if (hasSpouse()) {
-      <div class="form-group">
-        <label for="spouseEducation">Nível de educação do cônjuge</label>
-        <select id="spouseEducation" [ngModel]="spouseEducation()" (ngModelChange)="spouseEducation.set($event)">
-          @for (opt of educationOptions; track opt.value) {
-            <option [value]="opt.value">{{ opt.label }}</option>
-          }
-        </select>
-      </div>
+      <div class="spouse-fields">
+        <div class="form-group">
+          <label for="spouseEducation">Nível de educação do cônjuge</label>
+          <select id="spouseEducation" [ngModel]="spouseEducation()" (ngModelChange)="spouseEducation.set($event)">
+            @for (opt of educationOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label for="spouseCanadianWork">Experiência de trabalho do cônjuge no Canadá</label>
-        <select id="spouseCanadianWork" [ngModel]="spouseCanadianWorkYears()" (ngModelChange)="spouseCanadianWorkYears.set($event)">
-          @for (opt of workYearOptions; track opt.value) {
-            <option [value]="opt.value">{{ opt.label }}</option>
-          }
-        </select>
-      </div>
+        <div class="form-group">
+          <label for="spouseCanadianWork">Experiência de trabalho do cônjuge no Canadá</label>
+          <select id="spouseCanadianWork" [ngModel]="spouseCanadianWorkYears()" (ngModelChange)="spouseCanadianWorkYears.set($event)">
+            @for (opt of workYearOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
 
-      <div class="abilities-grid">
-        @for (ability of abilities; track ability) {
-          <div class="form-group">
-            <label>{{ abilityLabels[ability] }} (CLB)</label>
-            <select [ngModel]="spouseFirstLanguage()[ability]" (ngModelChange)="updateAbility('spouse', ability, $event)">
-              @for (opt of clbOptions; track opt.value) {
-                <option [value]="opt.value">{{ opt.label }}</option>
-              }
-            </select>
-          </div>
-        }
+        <div class="abilities-grid">
+          @for (ability of abilities; track ability) {
+            <div class="form-group">
+              <label>{{ abilityLabels[ability] }} (CLB)</label>
+              <select [ngModel]="spouseFirstLanguage()[ability]" (ngModelChange)="updateAbility('spouse', ability, $event)">
+                @for (opt of clbOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+          }
+        </div>
       </div>
     }
-  </div>
+  </section>
 
-  <button class="calculate-btn" (click)="calculate()" [disabled]="isLoading()">Calcular nota CRS</button>
-
-  @if (isLoading()) {
-    <p>Calculando...</p>
-  }
+  <button class="btn btn-primary calculate-btn" (click)="calculate()" [disabled]="isLoading()">
+    {{ isLoading() ? 'Calculando…' : 'Calcular nota CRS' }}
+  </button>
 
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
   }
 
   @if (result(); as res) {
-    <div class="result">
-      <p class="score-label">Sua nota CRS estimada</p>
-      <p class="score">{{ res.totalScore }}</p>
+    <section class="card result">
+      <div class="score-block">
+        <p class="score-label">Sua nota CRS estimada</p>
+        <p class="score">{{ res.totalScore }}</p>
+      </div>
 
       <table class="breakdown">
         <thead>
-          <tr><th>Fator</th><th>Pontos</th></tr>
+          <tr><th>Fator</th><th class="num">Pontos</th></tr>
         </thead>
         <tbody>
-          <tr><td>Idade</td><td>{{ res.breakdown.age }}</td></tr>
-          <tr><td>Educação</td><td>{{ res.breakdown.education }}</td></tr>
-          <tr><td>Primeira língua oficial</td><td>{{ res.breakdown.firstLanguage }}</td></tr>
-          <tr><td>Segunda língua oficial</td><td>{{ res.breakdown.secondLanguage }}</td></tr>
-          <tr><td>Experiência canadense</td><td>{{ res.breakdown.canadianWorkExperience }}</td></tr>
-          <tr><td>Fatores do cônjuge</td><td>{{ res.breakdown.spouseFactors }}</td></tr>
-          <tr><td>Transferibilidade de habilidades</td><td>{{ res.breakdown.skillTransferability }}</td></tr>
-          <tr><td>Pontos adicionais</td><td>{{ res.breakdown.additional }}</td></tr>
+          <tr><td>Idade</td><td class="num">{{ res.breakdown.age }}</td></tr>
+          <tr><td>Educação</td><td class="num">{{ res.breakdown.education }}</td></tr>
+          <tr><td>Primeira língua oficial</td><td class="num">{{ res.breakdown.firstLanguage }}</td></tr>
+          <tr><td>Segunda língua oficial</td><td class="num">{{ res.breakdown.secondLanguage }}</td></tr>
+          <tr><td>Experiência canadense</td><td class="num">{{ res.breakdown.canadianWorkExperience }}</td></tr>
+          <tr><td>Fatores do cônjuge</td><td class="num">{{ res.breakdown.spouseFactors }}</td></tr>
+          <tr><td>Transferibilidade de habilidades</td><td class="num">{{ res.breakdown.skillTransferability }}</td></tr>
+          <tr><td>Pontos adicionais</td><td class="num">{{ res.breakdown.additional }}</td></tr>
         </tbody>
       </table>
-    </div>
+    </section>
   }
 
   @if (invitation(); as inv) {
-    <div class="result invitation">
+    <section class="card result invitation">
       <h2>Você seria convidado?</h2>
       <p class="invitation-subtitle">Sua nota comparada ao corte do draw mais recente de cada categoria.</p>
 
       @if (inv.pool; as pool) {
-        <p class="pool-position">
-          No pool atual, sua nota cai na faixa <strong>{{ pool.range }}</strong> —
-          acima de aproximadamente <strong>{{ pool.percentBelow }}%</strong> dos candidatos
-          ({{ pool.totalCandidates | number }} no total).
-        </p>
+        <div class="pool-position">
+          <span class="pool-position-text">
+            No pool atual, sua nota cai na faixa <strong>{{ pool.range }}</strong> —
+            acima de aproximadamente <strong>{{ pool.percentBelow }}%</strong> dos candidatos
+            ({{ pool.totalCandidates | number }} no total).
+          </span>
+        </div>
       }
 
-      <table class="breakdown invitation-table">
-        <thead>
-          <tr>
-            <th>Categoria</th>
-            <th>Último corte</th>
-            <th>Resultado</th>
-            <th>Elegibilidade</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (cat of sortedCategories(); track cat.category + cat.latestDrawNumber) {
+      <div class="invitation-table-wrap">
+        <table class="breakdown invitation-table">
+          <thead>
             <tr>
-              <td>{{ cat.category | categoryLabel }}</td>
-              <td>{{ cat.latestCutoff }} <span class="muted">(draw #{{ cat.latestDrawNumber }})</span></td>
-              <td>
-                <span class="verdict" [class.invited]="cat.wouldBeInvited" [class.not-invited]="!cat.wouldBeInvited">
-                  {{ cat.wouldBeInvited ? 'Convidado' : 'Não convidado' }}
-                </span>
-              </td>
-              <td>
-                <span class="badge"
-                  [class.badge-eligible]="cat.eligibility === 'Eligible'"
-                  [class.badge-unknown]="cat.eligibility === 'Unknown'"
-                  [class.badge-not]="cat.eligibility === 'NotEligible'">
-                  {{ cat.eligibility === 'Eligible' ? 'Elegível' : cat.eligibility === 'Unknown' ? 'Depende da ocupação' : 'Não elegível' }}
-                </span>
-              </td>
+              <th>Categoria</th>
+              <th>Último corte</th>
+              <th>Resultado</th>
+              <th>Elegibilidade</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (cat of sortedCategories(); track cat.category + cat.latestDrawNumber) {
+              <tr>
+                <td>
+                  <span class="cat-badge cat-{{ cat.category | categoryClass }}">{{ cat.category | categoryLabel }}</span>
+                </td>
+                <td>
+                  <span class="cutoff">{{ cat.latestCutoff }}</span>
+                  <span class="muted"> · draw #{{ cat.latestDrawNumber }}</span>
+                </td>
+                <td>
+                  <span class="badge" [class.badge-success]="cat.wouldBeInvited" [class.badge-danger]="!cat.wouldBeInvited">
+                    {{ cat.wouldBeInvited ? 'Convidado' : 'Não convidado' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge"
+                    [class.badge-success]="cat.eligibility === 'Eligible'"
+                    [class.badge-warning]="cat.eligibility === 'Unknown'"
+                    [class.badge-danger]="cat.eligibility === 'NotEligible'">
+                    {{ cat.eligibility === 'Eligible' ? 'Elegível' : cat.eligibility === 'Unknown' ? 'Depende da ocupação' : 'Não elegível' }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
   }
 </div>

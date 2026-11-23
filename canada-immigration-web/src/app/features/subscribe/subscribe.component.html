@@ -1,38 +1,42 @@
-<div class="subscribe-container">
-  <h1>Receba um e-mail quando sair uma nova rodada</h1>
-  <p>Cadastre seu e-mail e escolha quais categorias de rodada do Express Entry você quer acompanhar.</p>
+<div class="page-container subscribe-page">
+  <header class="page-header">
+    <h1>Alertas de novos draws</h1>
+    <p>Cadastre seu e-mail e escolha quais categorias de rodada do Express Entry você quer acompanhar.</p>
+  </header>
 
-  <div class="form-group">
-    <label for="email">E-mail</label>
-    <input
-      id="email"
-      type="email"
-      placeholder="seu@email.com"
-      [ngModel]="email()"
-      (ngModelChange)="email.set($event)"
-    />
-  </div>
+  <section class="card form-card">
+    <div class="form-group">
+      <label for="email">E-mail</label>
+      <input
+        id="email"
+        type="email"
+        placeholder="seu@email.com"
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+      />
+    </div>
 
-  <div class="form-group">
-    <label for="categories">Categorias</label>
-    @if (isLoadingCategories()) {
-      <p>Carregando categorias...</p>
-    } @else {
-      <select id="categories" #categorySelect multiple (change)="onCategoriesChange($event)">
-        <option [value]="allCategoriesValue">Todas / Qualquer categoria</option>
-        @for (category of categories(); track category) {
-          <option [value]="category">{{ category | categoryLabel }}</option>
-        }
-      </select>
-      <small>Segure Ctrl (ou Cmd no Mac) para selecionar mais de uma categoria.</small>
-    }
-  </div>
+    <div class="form-group">
+      <label for="categories">Categorias</label>
+      @if (isLoadingCategories()) {
+        <div class="skeleton-list" aria-busy="true" aria-label="Carregando categorias">
+          <div class="skeleton" style="height: 160px;"></div>
+        </div>
+      } @else {
+        <select id="categories" #categorySelect multiple (change)="onCategoriesChange($event)">
+          <option [value]="allCategoriesValue">Todas / Qualquer categoria</option>
+          @for (category of categories(); track category) {
+            <option [value]="category">{{ category | categoryLabel }}</option>
+          }
+        </select>
+        <small>Segure Ctrl (ou Cmd no Mac) para selecionar mais de uma categoria.</small>
+      }
+    </div>
 
-  <button (click)="subscribe()" [disabled]="isLoading()">Cadastrar</button>
-
-  @if (isLoading()) {
-    <p>Enviando...</p>
-  }
+    <button class="btn btn-primary" (click)="subscribe()" [disabled]="isLoading()">
+      {{ isLoading() ? 'Enviando…' : 'Cadastrar' }}
+    </button>
+  </section>
 
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>

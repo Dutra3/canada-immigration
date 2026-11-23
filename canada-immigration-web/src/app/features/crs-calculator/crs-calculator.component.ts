@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CrsScoreService } from '../../core/services/crs-score.service';
 import { CategoryLabelPipe } from '../../core/pipes/category-label.pipe';
+import { CategoryClassPipe } from '../../core/pipes/category-class.pipe';
 import {
   CanadianEducationLevel,
   CategoryInvitation,
@@ -21,7 +22,7 @@ interface SelectOption<T> {
 @Component({
   selector: 'app-crs-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule, CategoryLabelPipe],
+  imports: [CommonModule, FormsModule, CategoryLabelPipe, CategoryClassPipe],
   templateUrl: './crs-calculator.component.html',
   styleUrl: './crs-calculator.component.scss'
 })

@@ -2,13 +2,14 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoryLabelPipe } from '../../../core/pipes/category-label.pipe';
+import { CategoryClassPipe } from '../../../core/pipes/category-class.pipe';
 import { ExpressEntryDrawService } from '../../../core/services/express-entry-draw.service';
 import { ExpressEntryDraw, PagedResult } from '../../../models/express-entry-draw.model';
 
 @Component({
   selector: 'app-draws-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, CategoryLabelPipe],
+  imports: [CommonModule, FormsModule, CategoryLabelPipe, CategoryClassPipe],
   templateUrl: './draws-list.component.html',
   styleUrl: './draws-list.component.scss'
 })

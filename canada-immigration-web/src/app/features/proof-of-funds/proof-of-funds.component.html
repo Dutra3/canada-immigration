@@ -1,31 +1,44 @@
-<div class="proof-of-funds-container">
-  <h1>Proof of Funds — Imigração Canadense</h1>
-  <p>Informe o número de familiares para descobrir o valor mínimo exigido em fundos comprováveis.</p>
+<div class="page-container">
+  <header class="page-header">
+    <h1>Proof of Funds</h1>
+    <p>Valor mínimo em fundos comprováveis exigido pelo IRCC de acordo com o número de familiares.</p>
+  </header>
 
-  <div class="form-group">
-    <label for="familySize">Número de familiares</label>
-    <input
-      id="familySize"
-      type="number"
-      min="1"
-      [ngModel]="familySize()"
-      (ngModelChange)="familySize.set($event)"
-    />
-    <button (click)="calculate()" [disabled]="isLoading()">Calcular</button>
-  </div>
+  <section class="card form-card">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="familySize">Número de familiares</label>
+        <input
+          id="familySize"
+          type="number"
+          min="1"
+          [ngModel]="familySize()"
+          (ngModelChange)="familySize.set($event)"
+        />
+      </div>
+      <button class="btn btn-primary" (click)="calculate()" [disabled]="isLoading()">
+        {{ isLoading() ? 'Calculando…' : 'Calcular' }}
+      </button>
+    </div>
+  </section>
 
   @if (isLoading()) {
-    <p>Calculando...</p>
+    <div class="skeleton-list" aria-busy="true" aria-label="Calculando">
+      <div class="skeleton" style="height: 120px;"></div>
+    </div>
   }
 
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
   }
 
-  @if (result()) {
-    <div class="result">
-      <p>Para <strong>{{ result()!.familySize }}</strong> familiar(es), o valor mínimo exigido é:</p>
-      <p class="amount">{{ result()!.requiredFundsCad | currency: 'CAD' }}</p>
-    </div>
+  @if (result(); as res) {
+    <section class="card result-card">
+      <p class="result-text">
+        Para <strong>{{ res.familySize }}</strong> familiar(es), o valor mínimo exigido é:
+      </p>
+      <p class="amount">{{ res.requiredFundsCad | currency: 'CAD' : 'symbol' : '1.0-0' }}</p>
+      <p class="result-note">Valores de referência do IRCC — confirme sempre no site oficial antes de imigrar.</p>
+    </section>
   }
 </div>

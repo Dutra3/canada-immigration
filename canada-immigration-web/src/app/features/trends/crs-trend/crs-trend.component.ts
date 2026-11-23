@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoryLabelPipe } from '../../../core/pipes/category-label.pipe';
 import { ExpressEntryDrawService } from '../../../core/services/express-entry-draw.service';
-import { ExpressEntryDraw, PagedResult } from '../../../models/express-entry-draw.model';
+import { ExpressEntryDraw } from '../../../models/express-entry-draw.model';
+import { Observable, concatMap, of } from 'rxjs';
 
 interface TrendPoint {
   drawNumber: number;
@@ -24,7 +25,7 @@ interface XLabel {
   x: number;
 }
 
-const ALL_DRAWS_PAGE_SIZE = 1000;
+const PAGE_SIZE = 200;
 const Y_TICK_COUNT = 5;
 const X_LABEL_COUNT = 6;
 
@@ -56,7 +57,7 @@ export class CrsTrendComponent implements OnInit {
     const ordered = [...this.draws()].sort((a, b) => a.date.localeCompare(b.date));
     const n = ordered.length;
 
-    const empty = { points: [] as TrendPoint[], polyline: '', yTicks: [] as AxisTick[], xLabels: [] as XLabel[] };
+    const empty = { points: [] as TrendPoint[], polyline: '', area: '', yTicks: [] as AxisTick[], xLabels: [] as XLabel[] };
     if (n === 0) {
       return empty;
     }
@@ -90,7 +91,10 @@ export class CrsTrendComponent implements OnInit {
       return { date: ordered[index].date, x: points[index].x };
     });
 
-    return { points, polyline: points.map(p => `${p.x},${p.y}`).join(' '), yTicks, xLabels };
+    const baselineY = this.chartHeight - this.paddingBottom;
+    const area = `${points.map(p => `${p.x},${p.y}`).join(' ')} ${points[n - 1].x},${baselineY} ${points[0].x},${baselineY}`;
+
+    return { points, polyline: points.map(p => `${p.x},${p.y}`).join(' '), area, yTicks, xLabels };
   });
 
   constructor(private drawService: ExpressEntryDrawService) {}
@@ -130,9 +134,12 @@ export class CrsTrendComponent implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.drawService.getDraws(1, ALL_DRAWS_PAGE_SIZE, this.selectedYear() ?? undefined, this.selectedCategory() ?? undefined).subscribe({
-      next: (result: PagedResult<ExpressEntryDraw>) => {
-        this.draws.set(result.items);
+    const year = this.selectedYear() ?? undefined;
+    const category = this.selectedCategory() ?? undefined;
+
+    this.fetchAllDraws(year, category).subscribe({
+      next: (draws) => {
+        this.draws.set(draws);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -141,5 +148,22 @@ export class CrsTrendComponent implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  private fetchAllDraws(
+    year: number | undefined,
+    category: string | undefined,
+    page = 1,
+    accumulated: ExpressEntryDraw[] = []
+  ): Observable<ExpressEntryDraw[]> {
+    return this.drawService.getDraws(page, PAGE_SIZE, year, category).pipe(
+      concatMap((result) => {
+        const all = [...accumulated, ...result.items];
+        const hasMore = all.length < result.totalCount && result.items.length === PAGE_SIZE;
+        return hasMore
+          ? this.fetchAllDraws(year, category, page + 1, all)
+          : of(all);
+      })
+    );
   }
 }

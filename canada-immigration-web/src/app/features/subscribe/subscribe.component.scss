@@ -1,58 +1,41 @@
-.subscribe-container {
-  padding: 2rem;
-  max-width: 900px;
-  color: var(--text-primary);
+.subscribe-page {
+  max-width: 640px;
+}
+
+.form-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.5rem;
+
+  .btn {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+  }
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin: 1rem 0;
-  max-width: 400px;
+  gap: 0.45rem;
 
   label {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 550;
   }
 
-  input,
-  select {
-    padding: 0.5rem;
-    background: var(--bg-card);
-    border: 0.5px solid var(--border-color);
-    border-radius: 6px;
-    color: var(--text-primary);
+  input {
+    max-width: 420px;
   }
 
   select {
-    min-height: 160px;
+    min-height: 170px;
+    max-width: 420px;
   }
 
   small {
-    color: var(--text-secondary);
+    color: var(--text-muted);
     font-size: 12px;
   }
-}
-
-button {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  background: transparent;
-  border: 0.5px solid var(--border-color);
-  color: var(--text-primary);
-  border-radius: 6px;
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-}
-
-.error {
-  color: #e24b4a;
-}
-
-.success {
-  color: #3fb950;
 }

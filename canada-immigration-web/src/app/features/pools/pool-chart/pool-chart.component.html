@@ -1,10 +1,13 @@
-<div class="pool-container">
-  <h1>Express Entry — Distribuição do Pool CRS</h1>
+<div class="page-container">
+  <header class="page-header">
+    <h1>Pool de CRS</h1>
+    <p>Distribuição dos candidatos do Express Entry por faixa de pontuação CRS no draw mais recente.</p>
+  </header>
 
   @if (isLoading()) {
     <div class="skeleton-list" aria-busy="true" aria-label="Carregando distribuição do pool">
       <div class="skeleton" style="height: 90px;"></div>
-      <div class="skeleton" style="height: 380px;"></div>
+      <div class="skeleton" style="height: 420px;"></div>
     </div>
   }
 
@@ -12,32 +15,39 @@
     <p class="error">{{ errorMessage() }}</p>
   }
 
-  @if (!isLoading() && !errorMessage() && pool()) {
+  @if (!isLoading() && !errorMessage() && pool(); as pool) {
     <div class="metrics">
       <div class="metric-card">
         <p class="label">Draw de referência</p>
-        <p class="value">#{{ pool()!.drawNumber }}</p>
+        <p class="value">#{{ pool.drawNumber }}</p>
       </div>
       <div class="metric-card">
         <p class="label">Data</p>
-        <p class="value">{{ pool()!.drawDate | date: 'dd/MM/yyyy' }}</p>
+        <p class="value date">{{ pool.drawDate | date: 'dd/MM/yyyy' }}</p>
       </div>
       <div class="metric-card">
         <p class="label">Total no pool</p>
-        <p class="value">{{ pool()!.totalCandidates | number }}</p>
+        <p class="value">{{ pool.totalCandidates | number }}</p>
       </div>
     </div>
 
-    <div class="table-card">
+    <div class="card chart-card">
       <svg
         [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight()"
         class="pool-chart"
         role="img"
         aria-label="Distribuição de candidatos por faixa de pontuação CRS"
       >
+        <defs>
+          <linearGradient id="poolBarGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#2f6ae0" />
+            <stop offset="100%" stop-color="#5b9dff" />
+          </linearGradient>
+        </defs>
+
         @for (bar of chartBars(); track bar.range) {
           <text
-            [attr.x]="labelWidth - 8"
+            [attr.x]="labelWidth - 10"
             [attr.y]="bar.y + barHeight / 2"
             text-anchor="end"
             dominant-baseline="middle"
@@ -49,12 +59,20 @@
             [attr.y]="bar.y"
             [attr.width]="bar.width"
             [attr.height]="barHeight"
-            rx="4"
+            rx="5"
+            class="bar-track"
+          ></rect>
+          <rect
+            [attr.x]="labelWidth"
+            [attr.y]="bar.y"
+            [attr.width]="bar.width"
+            [attr.height]="barHeight"
+            rx="5"
             class="bar-rect"
           ></rect>
 
           <text
-            [attr.x]="labelWidth + bar.width + 8"
+            [attr.x]="labelWidth + bar.width + 10"
             [attr.y]="bar.y + barHeight / 2"
             dominant-baseline="middle"
             class="bar-value"

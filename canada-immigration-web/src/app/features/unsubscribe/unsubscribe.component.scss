@@ -1,26 +1,52 @@
-.unsubscribe-container {
+.unsubscribe-page {
   max-width: 560px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
 }
 
 .result-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 2.5rem 2rem;
+
+  h2 {
+    margin: 0.5rem 0 0;
+  }
 
   p {
     margin: 0 0 0.75rem;
-    color: var(--text-secondary);
+    max-width: 380px;
   }
 
-  .link {
-    color: var(--accent);
+  .btn {
     text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
+    margin-top: 0.5rem;
   }
+}
+
+.result-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.success-icon {
+  color: var(--success);
+  background: var(--success-bg);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.error-icon {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid rgba(248, 113, 113, 0.3);
 }
