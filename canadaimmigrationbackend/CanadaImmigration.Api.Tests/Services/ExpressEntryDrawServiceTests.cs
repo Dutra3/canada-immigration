@@ -252,6 +252,36 @@ public class ExpressEntryDrawServiceTests
     }
 
     [Fact]
+    public async Task GetPoolDistributionAsync_WithOpenEndedRange_KeepsItAndStillRemovesAggregates()
+    {
+        const string json = """
+        {
+            "pool": {
+                "drawNumber": 442,
+                "drawDate": "2026-09-10",
+                "ranges": [
+                    { "key": "dd1", "range": "100-200", "value": "1,000" },
+                    { "key": "dd2", "range": "100-140", "value": "400" },
+                    { "key": "dd3", "range": "141-200", "value": "600" },
+                    { "key": "dd4", "range": "700+", "value": "5" },
+                    { "key": "dd5", "range": "Total", "value": "50,000" }
+                ]
+            }
+        }
+        """;
+
+        var service = CreateService(json);
+        var pool = await service.GetPoolDistributionAsync();
+
+        Assert.NotNull(pool);
+        Assert.DoesNotContain(pool!.Ranges, r => r.Range == "100-200");
+        Assert.Contains(pool.Ranges, r => r.Range == "100-140");
+        Assert.Contains(pool.Ranges, r => r.Range == "141-200");
+        Assert.Contains(pool.Ranges, r => r.Range == "700+");
+        Assert.Equal(50000m, pool.TotalCandidates);
+    }
+
+    [Fact]
     public async Task GetDrawsAsync_SecondCallWithSameFilters_UsesCache()
     {
         const string json = """{ "draws": [] }""";
