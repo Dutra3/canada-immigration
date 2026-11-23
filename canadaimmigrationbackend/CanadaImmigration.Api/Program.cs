@@ -32,6 +32,10 @@ var connectionString = builder.Configuration.GetConnectionString("Default")
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
 
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>("database")
+    .AddCheck<ExternalApiHealthCheck>("external-api");
+
 builder.Services.AddScoped<ISubscriberService, SubscriberService>();
 
 var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"]
@@ -104,6 +108,8 @@ app.UseHttpsRedirection();
 app.UseCors(AngularDevCorsPolicy);
 
 app.UseRateLimiter();
+
+app.MapHealthChecks("/health");
 
 app.UseAuthorization();
 
